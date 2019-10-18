@@ -1,0 +1,5 @@
+Capasitive Loading:
+3.3V LVTTL -> 1
+
+Unused pins:
+as tri-stated input

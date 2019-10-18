@@ -1,0 +1,16 @@
+Fitter Status : Successful - Fri Aug 17 01:55:32 2012
+Quartus II 32-bit Version : 11.1 Build 259 01/25/2012 SP 2 SJ Web Edition
+Revision Name : TestProgramm
+Top-level Entity Name : TestSDRAM0
+Family : Cyclone II
+Device : EP2C70F896C6
+Timing Models : Final
+Total logic elements : 3,305 / 68,416 ( 5 % )
+    Total combinational functions : 1,591 / 68,416 ( 2 % )
+    Dedicated logic registers : 2,731 / 68,416 ( 4 % )
+Total registers : 2731
+Total pins : 85 / 622 ( 14 % )
+Total virtual pins : 0
+Total memory bits : 105,984 / 1,152,000 ( 9 % )
+Embedded Multiplier 9-bit elements : 0 / 300 ( 0 % )
+Total PLLs : 1 / 4 ( 25 % )

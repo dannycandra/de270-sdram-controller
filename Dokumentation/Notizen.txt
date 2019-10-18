@@ -1,0 +1,35 @@
+
+--Steps needed by SDRAM to intitialize
+--#1. Power up initialization time taken 200 us, one, either NOP or INHIBIT
+-- Command is MUST within this period -- as per specs
+--#2. PRECHARGE Command MUST be issued
+--#3. 8 AUTO REFRESH cycles MUST be performed
+--#4. Mode Register may be programmed now.
+--Steps needed by SDRAM to initialize Ends
+--Steps needed by SDRAM to write data
+
+--#1). Get the address from up, store the address, Activate the corresponding
+--     Row. by providing A0 to A12(which will select the ROW) and BA0, BA1
+--     which will select the Coloumn
+--
+--#2). Wait for trcd = 15 ns  while putting NOP on the command bus
+--     provide  A0 through A9, A11 in case of (x4), A0 through A9 in case of
+--     (x8) , A0 through A8 in case of (x16). We will use (x8)
+--#3). Issue the Coloumn address with the choice of A10 = 0 for Disable Auto
+--     Precharge, A10 = 1 for Enable Auto Precharge.We will use Auto Precharge
+--     DISABLED But here in case of Burst length = full page we do not need
+--     A10 functiionality since it is not used in this cycle.
+
+--Steps needed by SDRAM to write data Ends
+
+
+--Steps needed by SDRAM to Maintain data
+
+--The SDRAM MUST be AUTO REFERESHED every 7.81 us or 7810 ns
+--if f is the clock freq, then T = 1/f, so n * 1/F = 7810,so n=7.81*f in MHz
+--Here f = 100 MHz, so n = 781. Every 781 clocks, an Auto Ref is needed.
+--It may be possible, to apply 8192 Auto refs Once in 64 ms or Once in
+--64000 * f in HHz clock cycles, we take f  100 MHz, so every 6400000 clock 
+--cycles, we need a burst of 8192 Auto refereshs
+
+--Steps needed by SDRAM to Maintain data Ends

@@ -1,0 +1,14 @@
+Analysis & Synthesis Status : Successful - Fri Aug 17 01:55:18 2012
+Quartus II 32-bit Version : 11.1 Build 259 01/25/2012 SP 2 SJ Web Edition
+Revision Name : TestProgramm
+Top-level Entity Name : TestSDRAM0
+Family : Cyclone II
+Total logic elements : 3,440
+    Total combinational functions : 1,586
+    Dedicated logic registers : 2,731
+Total registers : 2731
+Total pins : 85
+Total virtual pins : 0
+Total memory bits : 105,984
+Embedded Multiplier 9-bit elements : 0
+Total PLLs : 1

@@ -1,0 +1,349 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"><title>ref-sdr-sdram-vhdl.zip sdr_sdram.vhd</title>
+<link href="sdr_sdram.vhd___files/read_style.css" type="text/css" rel="stylesheet"></head><body>
+<p><a href="http://www.pudn.com/">www.pudn.com</a> &gt; <a href="http://www.pudn.com/downloads120/sourcecode/embed/detail511715.html">ref-sdr-sdram-vhdl.zip</a> &gt; sdr_sdram.vhd, change:2002-09-02,size:15447b</p><!-- saved from http://www.pudn.com -->
+<script src="sdr_sdram.vhd___files/gg_read1.js"></script><form action="http://www.pudn.com/search_db.asp" method="get" target="_blank">
+
+&nbsp;<input maxlength="50" size="20" name="keyword">
+
+<input value="Search codes" type="submit">
+
+<br>
+<script type="text/javascript" src="sdr_sdram.vhd___files/show_ads.js">
+</script><script src="sdr_sdram.vhd___files/expansion_embed.js"></script><script src="sdr_sdram.vhd___files/test_domain.js"></script><script>google_protectAndRun("ads_core.google_render_ad", google_handleError, google_render_ad);</script><ins style="border: medium none ; margin: 0pt; padding: 0pt; display: inline-table; height: 90px; position: relative; visibility: visible; width: 728px;"><ins style="border: medium none ; margin: 0pt; padding: 0pt; display: block; height: 90px; position: relative; visibility: visible; width: 728px;"><iframe allowtransparency="true" hspace="0" id="google_ads_frame1" marginheight="0" marginwidth="0" name="google_ads_frame" src="sdr_sdram.vhd___files/ads.htm" style="left: 0pt; position: absolute; top: 0pt;" vspace="0" width="728" frameborder="0" height="90" scrolling="no"></iframe></ins></ins>
+<br>
+<pre name="code" class="vhd">--####################################################################### 
+-- 
+--  LOGIC CORE:          SDR SDRAM Controller							 
+--  MODULE NAME:         sdr_sdram() 
+--  COMPANY:             Altera Corporation 
+--                       www.altera.com		 
+-- 
+--  REVISION HISTORY:   
+-- 
+--    Revision 1.1  06/06/2000	Description: Initial Release. 
+-- 
+--  FUNCTIONAL DESCRIPTION: 
+-- 
+--  This module is the top level module for the SDR SDRAM controller. 
+-- 
+-- 
+--  Copyright (C) 1991-2000 Altera Corporation   
+-- 
+--####################################################################### 
+ 
+ 
+ 
+library ieee; 
+use ieee.std_logic_1164.all; 
+     
+ 
+ 
+entity sdr_sdram is 
+	 
+    generic ( 
+         ASIZE          : integer := 23; 
+         DSIZE          : integer := 32; 
+         ROWSIZE        : integer := 12; 
+         COLSIZE        : integer := 9; 
+         BANKSIZE       : integer := 2; 
+         ROWSTART       : integer := 9;          
+         COLSTART       : integer := 0;          
+         BANKSTART      : integer := 20			 
+    ); 
+ 
+    port ( 
+         CLK            : in      std_logic;                                   --System Clock 
+         RESET_N        : in      std_logic;                                   --System Reset 
+         ADDR           : in      std_logic_vector(ASIZE-1 downto 0);          --Address for controller requests 
+         CMD            : in      std_logic_vector(2 downto 0);                --Controller command  
+         CMDACK         : out     std_logic;                                   --Controller command acknowledgement 
+         DATAIN         : in      std_logic_vector(DSIZE-1 downto 0);          --Data input 
+         DATAOUT        : out     std_logic_vector(DSIZE-1 downto 0);          --Data output 
+         DM             : in      std_logic_vector(DSIZE/8-1 downto 0);        --Data mask input 
+         SA             : out     std_logic_vector(11 downto 0);               --SDRAM address output 
+         BA             : out     std_logic_vector(1 downto 0);                --SDRAM bank address 
+         CS_N           : out     std_logic_vector(1 downto 0);                --SDRAM Chip Selects 
+         CKE            : out     std_logic;                                   --SDRAM clock enable 
+         RAS_N          : out     std_logic;                                   --SDRAM Row address Strobe 
+         CAS_N          : out     std_logic;                                   --SDRAM Column address Strobe 
+         WE_N           : out     std_logic;                                   --SDRAM write enable 
+         DQ             : inout   std_logic_vector(DSIZE-1 downto 0);          --SDRAM data bus 
+         DQM            : out     std_logic_vector(DSIZE/8-1 downto 0)         --SDRAM data mask lines 
+	); 
+end sdr_sdram; 
+ 
+ 
+ 
+ 
+ 
+architecture RTL of sdr_sdram is 
+ 
+-- component declarations 
+	 
+    component command 
+         generic ( 
+              ASIZE          : integer := 23; 
+              DSIZE          : integer := 32; 
+              ROWSIZE        : integer := 12; 
+              COLSIZE        : integer := 9; 
+              BANKSIZE       : integer := 2; 
+              ROWSTART       : integer := 9;          -- Starting position of the row address within ADDR    
+              COLSTART       : integer := 0;          -- Starting position of the column address within ADDR 
+              BANKSTART      : integer := 20          -- Starting position of the bank address within ADDR 
+         ); 
+         port ( 
+              CLK            : in      std_logic;                              -- System Clock 
+              RESET_N        : in      std_logic;                              -- System Reset 
+              SADDR          : in      std_logic_vector(ASIZE-1 downto 0);     -- Address 
+              NOP            : in      std_logic;                              -- Decoded NOP command 
+              READA          : in      std_logic;                              -- Decoded READA command 
+              WRITEA         : in      std_logic;                              -- Decoded WRITEA command 
+              REFRESH        : in      std_logic;                              -- Decoded REFRESH command 
+              PRECHARGE      : in      std_logic;                              -- Decoded PRECHARGE command 
+              LOAD_MODE      : in      std_logic;                              -- Decoded LOAD_MODE command 
+              SC_CL          : in      std_logic_vector(1 downto 0);           -- Programmed CAS latency 
+              SC_RC          : in      std_logic_vector(1 downto 0);           -- Programmed RC delay 
+              SC_RRD         : in      std_logic_vector(3 downto 0);           -- Programmed RRD delay 
+              SC_PM          : in      std_logic;                              -- programmed Page Mode 
+              SC_BL          : in      std_logic_vector(3 downto 0);           -- Programmed burst length 
+              REF_REQ        : in      std_logic;                              -- Hidden refresh request 
+              REF_ACK        : out     std_logic;                              -- Refresh request acknowledge 
+              CM_ACK         : out     std_logic;                              -- Command acknowledge 
+              OE             : out     std_logic;                              -- OE signal for data path module 
+              SA             : out     std_logic_vector(11 downto 0);          -- SDRAM address 
+              BA             : out     std_logic_vector(1 downto 0);           -- SDRAM bank address 
+              CS_N           : out     std_logic_vector(1 downto 0);           -- SDRAM chip selects 
+              CKE            : out     std_logic;                              -- SDRAM clock enable 
+              RAS_N          : out     std_logic;                              -- SDRAM RAS 
+              CAS_N          : out     std_logic;                              -- SDRAM CAS 
+              WE_N           : out     std_logic                               -- SDRAM WE_N 
+         ); 
+    end component; 
+	 
+	 
+    component sdr_data_path 
+         generic ( 
+              DSIZE : integer := 32 
+         ); 
+         port ( 
+              CLK            : in      std_logic;                              -- System Clock 
+	          RESET_N        : in      std_logic;                              -- System Reset 
+	          OE             : in      std_logic;                              -- Data output(to the SDRAM) enable 
+	          DATAIN         : in      std_logic_vector(DSIZE-1 downto 0);     -- Data input from the host 
+	          DM             : in      std_logic_vector(DSIZE/8-1 downto 0);   -- byte data masks 
+	          DATAOUT        : out     std_logic_vector(DSIZE-1 downto 0);     -- Read data output to host 
+	          DQIN           : in      std_logic_vector(DSIZE-1 downto 0);     -- SDRAM data bus 
+	          DQOUT          : out     std_logic_vector(DSIZE-1 downto 0); 
+              DQM            : out     std_logic_vector(DSIZE/8-1 downto 0)    -- SDRAM data mask ouputs 
+	     ); 
+    end component; 
+	 
+	 
+    component control_interface 
+         generic ( 
+              ASIZE : integer := 32 
+         ); 
+         port ( 
+	          CLK            : in      std_logic;                              -- System Clock 
+	          RESET_N        : in      std_logic;                              -- System Reset 
+	          CMD            : in      std_logic_vector(2 downto 0);           -- Command input 
+	          ADDR           : in      std_logic_vector(ASIZE-1 downto 0);     -- Address 
+	          REF_ACK        : in      std_logic;                              -- Refresh request acknowledge 
+	          CM_ACK         : in      std_logic;                              -- Command acknowledge 
+	          NOP	          : out     std_logic;                              -- Decoded NOP command 
+	          READA          : out     std_logic;                              -- Decoded READA command 
+	          WRITEA         : out     std_logic;                              -- Decoded WRITEA command 
+	          REFRESH        : out     std_logic;                              -- Decoded REFRESH command 
+	          PRECHARGE      : out     std_logic;                              -- Decoded PRECHARGE command 
+	          LOAD_MODE      : out     std_logic;                              -- Decoded LOAD_MODE command 
+	          SADDR          : out     std_logic_vector(ASIZE-1 downto 0);     -- Registered version of ADDR 
+	          SC_CL          : out     std_logic_vector(1 downto 0);           -- Programmed CAS latency 
+	          SC_RC          : out     std_logic_vector(1 downto 0);           -- Programmed RC delay 
+	          SC_RRD         : out     std_logic_vector(3 downto 0);           -- Programmed RRD delay 
+	          SC_PM          : out     std_logic;                              -- programmed Page Mode 
+	          SC_BL          : out     std_logic_vector(3 downto 0);           -- Programmed burst length 
+	          REF_REQ        : out     std_logic;                              -- Hidden refresh request 
+	          CMD_ACK        : out     std_logic	                              -- Command acknowledge 
+	     ); 
+    end component; 
+ 
+    attribute syn_black_box: boolean; 
+ 
+	component pll1 
+         port ( 
+              inclock        : in      std_logic; 
+              clock1         : out     std_logic; 
+              locked         : out     std_logic 
+         ); 
+    end component; 
+ attribute syn_black_box of pll1: component is true;	         
+          
+          
+          
+	 
+ 
+    -- signal declarations 
+    signal    ISA       :    std_logic_vector(11 downto 0);                    --SDRAM address output 
+    signal    IBA       :    std_logic_vector(1 downto 0);                     --SDRAM bank address 
+    signal    ICS_N     :    std_logic_vector(1 downto 0);                     --SDRAM Chip Selects 
+    signal    ICKE      :    std_logic;                                        --SDRAM clock enable 
+    signal    IRAS_N    :    std_logic;                                        --SDRAM Row address Strobe 
+    signal    ICAS_N    :    std_logic;                                        --SDRAM Column address Strobe 
+    signal    IWE_N     :    std_logic;  
+    signal    DQIN      :    std_logic_vector(DSIZE-1 downto 0); 
+    signal    IDATAOUT  :    std_logic_vector(DSIZE-1 downto 0); 
+    signal    DQOUT     :    std_logic_vector(DSIZE-1 downto 0);                                       --SDRAM write enable 
+                                                                                
+    signal    saddr     :    std_logic_vector(ASIZE-1 downto 0);             
+    signal    sc_cl     :    std_logic_vector(1 downto 0);                    
+    signal    sc_rc     :    std_logic_vector(1 downto 0);                    
+    signal    sc_rrd    :    std_logic_vector(3 downto 0);                    
+    signal    sc_pm     :    std_logic;                    
+    signal    sc_bl     :    std_logic_vector(3 downto 0);                    
+    signal    load_mode :    std_logic;                        
+    signal    nop       :    std_logic;                  
+    signal    reada     :    std_logic;                    
+    signal    writea    :    std_logic;                     
+    signal    refresh   :    std_logic;                      
+    signal    precharge :    std_logic;                        
+    signal    oe        :    std_logic;                 
+    signal    ref_req   :    std_logic;                 
+    signal    ref_ack   :    std_logic;                 
+    signal    cm_ack	:    std_logic;                 
+                              
+    signal    CLK133    :    std_logic;                     
+    signal    CLK133B   :    std_logic;  
+    signal    clklocked :    std_logic;                     
+ 
+begin 
+ 
+  
+	-- instantiate the control interface module 
+    control1 : control_interface 
+         generic map ( 
+              ASIZE =&gt; ASIZE 
+         ) 
+         port map  ( 
+	          CLK       =&gt; CLK133, 
+	          RESET_N   =&gt; RESET_N, 
+	          CMD       =&gt; CMD, 
+	          ADDR      =&gt; ADDR, 
+	          REF_ACK   =&gt; ref_ack, 
+	          CM_ACK    =&gt; cm_ack, 
+	          NOP       =&gt; nop, 
+	          READA     =&gt; reada, 
+	          WRITEA    =&gt; writea, 
+	          REFRESH   =&gt; refresh, 
+	          PRECHARGE =&gt; precharge, 
+	          LOAD_MODE =&gt; load_mode, 
+	          SADDR     =&gt; saddr, 
+	          SC_CL     =&gt; sc_cl, 
+	          SC_RC     =&gt; sc_rc, 
+	          SC_RRD    =&gt; sc_rrd, 
+	          SC_PM     =&gt; sc_pm, 
+	          SC_BL     =&gt; sc_bl, 
+	          REF_REQ   =&gt; ref_req, 
+	          CMD_ACK   =&gt; CMDACK 
+         ); 
+	                 
+	                 
+    -- instantiate the command module 
+    command1 : command 
+         generic map( 
+              ASIZE 		=&gt; ASIZE, 		 
+              DSIZE 		=&gt; DSIZE, 		 
+              ROWSIZE 	=&gt; ROWSIZE, 	 
+              COLSIZE 	=&gt; COLSIZE, 	 
+              BANKSIZE 	=&gt; BANKSIZE,  
+              ROWSTART 	=&gt; ROWSTART,  
+              COLSTART 	=&gt; COLSTART,  
+              BANKSTART 	=&gt; BANKSTART 
+         ) 
+         port map  ( 
+	          CLK       =&gt; CLK133, 
+	          RESET_N   =&gt; RESET_N, 
+	          SADDR     =&gt; saddr, 
+	          NOP       =&gt; nop, 
+	          READA     =&gt; reada, 
+	          WRITEA    =&gt; writea, 
+	          REFRESH   =&gt; refresh, 
+	          PRECHARGE =&gt; precharge, 
+	          LOAD_MODE =&gt; load_mode, 
+	          SC_CL     =&gt; sc_cl, 
+	          SC_RC     =&gt; sc_rc, 
+	          SC_RRD    =&gt; sc_rrd, 
+	          SC_PM     =&gt; sc_pm, 
+	          SC_BL     =&gt; sc_bl, 
+	          REF_REQ   =&gt; ref_req, 
+	          REF_ACK   =&gt; ref_ack, 
+	          CM_ACK    =&gt; cm_ack, 
+	          OE        =&gt; oe, 
+	          SA        =&gt; ISA, 
+	          BA        =&gt; IBA, 
+	          CS_N      =&gt; ICS_N, 
+	          CKE       =&gt; ICKE, 
+	          RAS_N     =&gt; IRAS_N, 
+	          CAS_N     =&gt; ICAS_N, 
+	          WE_N      =&gt; IWE_N 
+         ); 
+	     
+	                 
+    -- instantiate the data path module 
+    data_path1 : sdr_data_path  
+         generic map ( 
+              DSIZE =&gt; DSIZE 
+         ) 
+         port map  ( 
+	          CLK       =&gt; CLK133, 
+	          RESET_N   =&gt; RESET_N, 
+	          OE        =&gt; oe, 
+	          DATAIN    =&gt; DATAIN, 
+	          DM        =&gt; DM, 
+	          DATAOUT   =&gt; IDATAOUT, 
+	          DQM       =&gt; DQM, 
+              DQIN      =&gt; DQIN, 
+              DQOUT     =&gt; DQOUT 
+	    ); 
+	     
+    pll : pll1 
+         port map ( 
+              inclock =&gt; CLK, 
+              locked  =&gt; clklocked, 
+              clock1  =&gt; CLK133 
+         ); 
+               
+	     
+    -- Add a level flops to the sdram i/o that can be place 
+    -- by the router into the I/O cells 
+    process(CLK133) 
+    begin 
+         if rising_edge(CLK133) then 
+              SA        &lt;= ISA; 
+              BA        &lt;= IBA; 
+              CS_N      &lt;= ICS_N; 
+              CKE       &lt;= ICKE; 
+              RAS_N     &lt;= IRAS_N; 
+              CAS_N     &lt;= ICAS_N; 
+              WE_N      &lt;= IWE_N; 
+              DQIN      &lt;= DQ; 
+              DATAOUT   &lt;= IDATAOUT; 
+         end if; 
+    end process; 
+ 
+    -- tri-state the data bus using the OE signal from the main controller. 
+	 
+DQ &lt;= DQOUT when OE = '1' else (others =&gt; 'Z'); 
+ 
+ 
+end RTL; 
+ 
+</pre>
+<script src="sdr_sdram.vhd___files/gg_read2.js"></script>
+<div id="Javascript.gg_div" class="gg_div" style="width: 728px; height: 90px;" align="center">
+<script type="text/javascript" src="sdr_sdram.vhd___files/show_ads.js">
+</script><script>google_protectAndRun("ads_core.google_render_ad", google_handleError, google_render_ad);</script><ins style="border: medium none ; margin: 0pt; padding: 0pt; display: inline-table; height: 90px; position: relative; visibility: visible; width: 728px;"><ins style="border: medium none ; margin: 0pt; padding: 0pt; display: block; height: 90px; position: relative; visibility: visible; width: 728px;"><iframe allowtransparency="true" hspace="0" id="google_ads_frame2" marginheight="0" marginwidth="0" name="google_ads_frame" src="sdr_sdram.vhd___files/ads_002.htm" style="left: 0pt; position: absolute; top: 0pt;" vspace="0" width="728" frameborder="0" height="90" scrolling="no"></iframe></ins></ins>
+</div>
+<br>
+<script src="sdr_sdram.vhd___files/stat.htm" language="JavaScript" charset="gb2312"></script><a href="http://www.cnzz.com/stat/website.php?web_id=1236358" target="_blank" title="&#31449;&#38271;&#32479;&#35745;"><img src="sdr_sdram.vhd___files/pic.gif" vspace="0" border="0" hspace="0"></a><img src="sdr_sdram.vhd___files/stat.gif" width="0" border="0" height="0">
+</form></body></html>

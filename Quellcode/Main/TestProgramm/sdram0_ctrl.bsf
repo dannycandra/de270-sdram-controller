@@ -1,0 +1,219 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 1991-2011 Altera Corporation
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, Altera MegaCore Function License 
+Agreement, or other applicable license agreement, including, 
+without limitation, that your use is for the sole purpose of 
+programming logic devices manufactured by Altera and sold by 
+Altera or its authorized distributors.  Please refer to the 
+applicable agreement for further details.
+*/
+(header "symbol" (version "1.1"))
+(symbol
+	(rect 16 16 552 336)
+	(text "sdram0_ctrl" (rect 5 0 82 12)(font "Arial" ))
+	(text "inst" (rect 8 304 36 316)(font "Arial" ))
+	(port
+		(pt 0 32)
+		(input)
+		(text "clk_in" (rect 0 0 42 12)(font "Arial" ))
+		(text "clk_in" (rect 21 27 63 39)(font "Arial" ))
+		(line (pt 0 32)(pt 16 32)(line_width 1))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "reset" (rect 0 0 35 12)(font "Arial" ))
+		(text "reset" (rect 21 43 56 55)(font "Arial" ))
+		(line (pt 0 48)(pt 16 48)(line_width 1))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "addr_from_up[addr_bits_from_up-1..0]" (rect 0 0 254 12)(font "Arial" ))
+		(text "addr_from_up[addr_bits_from_up-1..0]" (rect 21 59 275 71)(font "Arial" ))
+		(line (pt 0 64)(pt 16 64)(line_width 3))
+	)
+	(port
+		(pt 0 80)
+		(input)
+		(text "rd_n_from_up" (rect 0 0 84 12)(font "Arial" ))
+		(text "rd_n_from_up" (rect 21 75 105 87)(font "Arial" ))
+		(line (pt 0 80)(pt 16 80)(line_width 1))
+	)
+	(port
+		(pt 0 96)
+		(input)
+		(text "wr_n_from_up" (rect 0 0 84 12)(font "Arial" ))
+		(text "wr_n_from_up" (rect 21 91 105 103)(font "Arial" ))
+		(line (pt 0 96)(pt 16 96)(line_width 1))
+	)
+	(port
+		(pt 0 112)
+		(input)
+		(text "datain[dqsize-1..0]" (rect 0 0 134 12)(font "Arial" ))
+		(text "datain[dqsize-1..0]" (rect 21 107 155 119)(font "Arial" ))
+		(line (pt 0 112)(pt 16 112)(line_width 3))
+	)
+	(port
+		(pt 536 32)
+		(output)
+		(text "oDRAM0_A[addr_bits_to_dram-1..0]" (rect 0 0 226 12)(font "Arial" ))
+		(text "oDRAM0_A[addr_bits_to_dram-1..0]" (rect 289 27 515 39)(font "Arial" ))
+		(line (pt 536 32)(pt 520 32)(line_width 3))
+	)
+	(port
+		(pt 536 48)
+		(output)
+		(text "oDRAM0_BA[ba_bits-1..0]" (rect 0 0 162 12)(font "Arial" ))
+		(text "oDRAM0_BA[ba_bits-1..0]" (rect 353 43 515 55)(font "Arial" ))
+		(line (pt 536 48)(pt 520 48)(line_width 3))
+	)
+	(port
+		(pt 536 64)
+		(output)
+		(text "oDRAM0_CLK" (rect 0 0 70 12)(font "Arial" ))
+		(text "oDRAM0_CLK" (rect 445 59 515 71)(font "Arial" ))
+		(line (pt 536 64)(pt 520 64)(line_width 1))
+	)
+	(port
+		(pt 536 80)
+		(output)
+		(text "oDRAM0_CKE" (rect 0 0 70 12)(font "Arial" ))
+		(text "oDRAM0_CKE" (rect 445 75 515 87)(font "Arial" ))
+		(line (pt 536 80)(pt 520 80)(line_width 1))
+	)
+	(port
+		(pt 536 96)
+		(output)
+		(text "oDRAM0_CAS_N" (rect 0 0 84 12)(font "Arial" ))
+		(text "oDRAM0_CAS_N" (rect 431 91 515 103)(font "Arial" ))
+		(line (pt 536 96)(pt 520 96)(line_width 1))
+	)
+	(port
+		(pt 536 112)
+		(output)
+		(text "oDRAM0_RAS_N" (rect 0 0 84 12)(font "Arial" ))
+		(text "oDRAM0_RAS_N" (rect 431 107 515 119)(font "Arial" ))
+		(line (pt 536 112)(pt 520 112)(line_width 1))
+	)
+	(port
+		(pt 536 128)
+		(output)
+		(text "oDRAM0_WE_N" (rect 0 0 77 12)(font "Arial" ))
+		(text "oDRAM0_WE_N" (rect 438 123 515 135)(font "Arial" ))
+		(line (pt 536 128)(pt 520 128)(line_width 1))
+	)
+	(port
+		(pt 536 144)
+		(output)
+		(text "oDRAM0_CS_N" (rect 0 0 77 12)(font "Arial" ))
+		(text "oDRAM0_CS_N" (rect 438 139 515 151)(font "Arial" ))
+		(line (pt 536 144)(pt 520 144)(line_width 1))
+	)
+	(port
+		(pt 536 160)
+		(output)
+		(text "oDRAM0_LDQM0" (rect 0 0 84 12)(font "Arial" ))
+		(text "oDRAM0_LDQM0" (rect 431 155 515 167)(font "Arial" ))
+		(line (pt 536 160)(pt 520 160)(line_width 1))
+	)
+	(port
+		(pt 536 176)
+		(output)
+		(text "oDRAM0_UDQM1" (rect 0 0 84 12)(font "Arial" ))
+		(text "oDRAM0_UDQM1" (rect 431 171 515 183)(font "Arial" ))
+		(line (pt 536 176)(pt 520 176)(line_width 1))
+	)
+	(port
+		(pt 536 192)
+		(output)
+		(text "clk_out" (rect 0 0 49 12)(font "Arial" ))
+		(text "clk_out" (rect 466 187 515 199)(font "Arial" ))
+		(line (pt 536 192)(pt 520 192)(line_width 1))
+	)
+	(port
+		(pt 536 208)
+		(output)
+		(text "dram_init_done" (rect 0 0 99 12)(font "Arial" ))
+		(text "dram_init_done" (rect 416 203 515 215)(font "Arial" ))
+		(line (pt 536 208)(pt 520 208)(line_width 1))
+	)
+	(port
+		(pt 536 224)
+		(output)
+		(text "dram_busy" (rect 0 0 63 12)(font "Arial" ))
+		(text "dram_busy" (rect 452 219 515 231)(font "Arial" ))
+		(line (pt 536 224)(pt 520 224)(line_width 1))
+	)
+	(port
+		(pt 536 240)
+		(output)
+		(text "dataout[dqsize-1..0]" (rect 0 0 141 12)(font "Arial" ))
+		(text "dataout[dqsize-1..0]" (rect 374 235 515 247)(font "Arial" ))
+		(line (pt 536 240)(pt 520 240)(line_width 3))
+	)
+	(port
+		(pt 536 256)
+		(output)
+		(text "sdram_zustand[2..0]" (rect 0 0 134 12)(font "Arial" ))
+		(text "sdram_zustand[2..0]" (rect 381 251 515 263)(font "Arial" ))
+		(line (pt 536 256)(pt 520 256)(line_width 3))
+	)
+	(port
+		(pt 536 272)
+		(bidir)
+		(text "DRAM_DQ[dqsize-1..0]" (rect 0 0 141 12)(font "Arial" ))
+		(text "DRAM_DQ[dqsize-1..0]" (rect 374 267 515 279)(font "Arial" ))
+		(line (pt 536 272)(pt 520 272)(line_width 3))
+	)
+	(parameter
+		"del"
+		"16"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"len_auto_ref"
+		"10"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"len_small"
+		"8"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"addr_bits_to_dram"
+		"13"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"addr_bits_from_up"
+		"24"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"ba_bits"
+		"2"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(parameter
+		"dqsize"
+		"16"
+		""
+		(type "PARAMETER_SIGNED_DEC")	)
+	(drawing
+		(rectangle (rect 16 16 520 304)(line_width 1))
+	)
+	(annotation_block (parameter)(rect 552 -64 652 16))
+)

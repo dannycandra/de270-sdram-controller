@@ -1,0 +1,120 @@
+/*
+WARNING: Do NOT edit the input and output ports in this file in a text
+editor if you plan to continue editing the block that represents it in
+the Block Editor! File corruption is VERY likely to occur.
+*/
+/*
+Copyright (C) 1991-2009 Altera Corporation
+Your use of Altera Corporation's design tools, logic functions 
+and other software and tools, and its AMPP partner logic 
+functions, and any output files from any of the foregoing 
+(including device programming or simulation files), and any 
+associated documentation or information are expressly subject 
+to the terms and conditions of the Altera Program License 
+Subscription Agreement, Altera MegaCore Function License 
+Agreement, or other applicable license agreement, including, 
+without limitation, that your use is for the sole purpose of 
+programming logic devices manufactured by Altera and sold by 
+Altera or its authorized distributors.  Please refer to the 
+applicable agreement for further details.
+*/
+(header "symbol" (version "1.1"))
+(symbol
+	(rect 16 16 192 208)
+	(text "DE2_TOUCHPANEL" (rect 5 0 106 12)(font "Arial" ))
+	(text "inst" (rect 8 176 25 188)(font "Arial" ))
+	(port
+		(pt 0 32)
+		(input)
+		(text "CLOCK_50" (rect 0 0 55 12)(font "Arial" ))
+		(text "CLOCK_50" (rect 21 27 76 39)(font "Arial" ))
+		(line (pt 0 32)(pt 16 32)(line_width 1))
+	)
+	(port
+		(pt 0 48)
+		(input)
+		(text "R[7..0]" (rect 0 0 34 12)(font "Arial" ))
+		(text "R[7..0]" (rect 21 43 55 55)(font "Arial" ))
+		(line (pt 0 48)(pt 16 48)(line_width 3))
+	)
+	(port
+		(pt 0 64)
+		(input)
+		(text "G[7..0]" (rect 0 0 34 12)(font "Arial" ))
+		(text "G[7..0]" (rect 21 59 55 71)(font "Arial" ))
+		(line (pt 0 64)(pt 16 64)(line_width 3))
+	)
+	(port
+		(pt 0 80)
+		(input)
+		(text "B[7..0]" (rect 0 0 33 12)(font "Arial" ))
+		(text "B[7..0]" (rect 21 75 54 87)(font "Arial" ))
+		(line (pt 0 80)(pt 16 80)(line_width 3))
+	)
+	(port
+		(pt 176 48)
+		(output)
+		(text "HOR_SYNC" (rect 0 0 62 12)(font "Arial" ))
+		(text "HOR_SYNC" (rect 93 43 155 55)(font "Arial" ))
+		(line (pt 176 48)(pt 160 48)(line_width 1))
+	)
+	(port
+		(pt 176 64)
+		(output)
+		(text "VERT_SYNC" (rect 0 0 66 12)(font "Arial" ))
+		(text "VERT_SYNC" (rect 89 59 155 71)(font "Arial" ))
+		(line (pt 176 64)(pt 160 64)(line_width 1))
+	)
+	(port
+		(pt 176 80)
+		(output)
+		(text "DEN" (rect 0 0 23 12)(font "Arial" ))
+		(text "DEN" (rect 132 75 155 87)(font "Arial" ))
+		(line (pt 176 80)(pt 160 80)(line_width 1))
+	)
+	(port
+		(pt 176 96)
+		(output)
+		(text "PIX_CLK" (rect 0 0 43 12)(font "Arial" ))
+		(text "PIX_CLK" (rect 112 91 155 103)(font "Arial" ))
+		(line (pt 176 96)(pt 160 96)(line_width 1))
+	)
+	(port
+		(pt 176 112)
+		(output)
+		(text "PIX_X[9..0]" (rect 0 0 54 12)(font "Arial" ))
+		(text "PIX_X[9..0]" (rect 101 107 155 119)(font "Arial" ))
+		(line (pt 176 112)(pt 160 112)(line_width 3))
+	)
+	(port
+		(pt 176 128)
+		(output)
+		(text "PIX_Y[9..0]" (rect 0 0 56 12)(font "Arial" ))
+		(text "PIX_Y[9..0]" (rect 99 123 155 135)(font "Arial" ))
+		(line (pt 176 128)(pt 160 128)(line_width 3))
+	)
+	(port
+		(pt 176 144)
+		(output)
+		(text "PEN_X[9..0]" (rect 0 0 60 12)(font "Arial" ))
+		(text "PEN_X[9..0]" (rect 95 139 155 151)(font "Arial" ))
+		(line (pt 176 144)(pt 160 144)(line_width 3))
+	)
+	(port
+		(pt 176 160)
+		(output)
+		(text "PEN_Y[9..0]" (rect 0 0 62 12)(font "Arial" ))
+		(text "PEN_Y[9..0]" (rect 93 155 155 167)(font "Arial" ))
+		(line (pt 176 160)(pt 160 160)(line_width 3))
+	)
+	(port
+		(pt 176 32)
+		(bidir)
+		(text "GPIO_0[35..0]" (rect 0 0 70 12)(font "Arial" ))
+		(text "GPIO_0[35..0]" (rect 85 27 155 39)(font "Arial" ))
+		(line (pt 176 32)(pt 160 32)(line_width 3))
+	)
+	(drawing
+		(rectangle (rect 16 16 160 176)(line_width 1))
+	)
+)

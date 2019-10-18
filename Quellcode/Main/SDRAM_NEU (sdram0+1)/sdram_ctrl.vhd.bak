@@ -1,0 +1,11 @@
+---------------------------------------------------------------------------
+-- Funktion : Ansteuerung des extern SDRAM Speichers auf dem DE2-70 Board
+-- Filename : sdram_ctrl.vhd
+-- Beschreibung : 4M x 16bit x 4 Banks SDRAM
+-- Standard : VHDL 1993
+-- Author : Danny Candra, Ahmad Hassan
+-- Revision : Version 0.1 
+---------------------------------------------------------------------------
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all; 

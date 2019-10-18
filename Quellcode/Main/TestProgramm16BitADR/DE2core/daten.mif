@@ -1,0 +1,43 @@
+Depth = 32;
+Width = 16;
+Address_radix = bin;
+Data_radix = dec;
+% Datenwerte für Rechenwerk %
+Content
+  Begin
+00000  : 1 ;
+00001  : 2 ;
+00010  : 3 ;
+00011  : 4 ;
+00100  : 5 ;
+00101  : 6 ;
+00110  : 7 ; 
+00111  : 0 ;
+01000  : 0 ; 
+01001  : 0 ; 
+01010  : 0 ; 
+01011  : 0 ; 
+01100  : 0 ; 
+01101  : 0 ; 
+01110  : 0 ; 
+01111  : 0 ; 
+
+10000  : 0 ; % nicht genutzt %
+10001  : 0 ; % nicht genutzt %
+10010  : 0 ; % nicht genutzt %
+10011  : 0 ; % nicht genutzt %
+10100  : 0 ; % nicht genutzt %
+10101  : 0 ; % nicht genutzt %
+10110  : 0 ; % nicht genutzt %
+10111  : 0 ; % nicht genutzt %
+
+11000  : 0 ; % nicht genutzt %
+11001  : 0 ; % nicht genutzt %
+11010  : 0 ; % nicht genutzt %
+11011  : 0 ; % nicht genutzt %
+11100  : 0 ; % nicht genutzt %
+11101  : 0 ; % nicht genutzt %
+11110  : 0 ; % nicht genutzt %
+11111  : 0 ; % nicht genutzt %
+
+end;

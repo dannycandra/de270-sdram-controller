@@ -1,0 +1,37 @@
+@charset "utf-8";
+
+body.body-container { background-color:#fff; width:100%; }
+
+div.page-container { width:100%; text-align:left; }
+
+span.top-banner-right { display:none; }
+div.top-banner div form { display:none; }
+div.top-banner div ul { display:none; }
+
+div.menu-blur { display:none; }
+
+div.leftnav-content-footer-container { background-color:#fff; background-image:none; width:100%; }
+
+div.content-container { width:100%; background-image:none; }
+
+div.content { width:auto;} 
+
+div.cta { display:none; }
+
+div.breadcrumb { display:none; }
+
+div.ratethispage { display:none; }
+
+div.bottom-leftnav { display:none; }
+
+div.left-navigation { display:none; }
+
+div.footer-gutter { display:none; }
+
+div.footer-container-blur { background-color:#fff; height:auto; }
+div.footer-container-shadow { background-color:#fff; height:auto; }
+div.footer-container { background-color:#fff; height:auto; }
+div.footer-navigation { display:none; }
+div.footer-copyright { color:#000; text-align:center; }
+table.footer-icons { display:none; }
+

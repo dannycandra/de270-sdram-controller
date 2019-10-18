@@ -1,0 +1,45 @@
+
+(function() {
+if (!google.elements || !google.elements.transliteration) {
+return;
+}
+var t13nLangs = 'en'.split(',');
+if (t13nLangs.length == 1 && t13nLangs[0] != '') {
+var t13nLangCode = t13nLangs[0];
+t13nLangs = [];
+var supportedT13nLanguages =
+google.elements.transliteration.getDestinationLanguages('en');
+for (var lang in supportedT13nLanguages) {
+var supportedLangCode = supportedT13nLanguages[lang];
+if (supportedLangCode == t13nLangCode) {
+t13nLangs = [t13nLangCode];
+break;
+}
+}
+}
+if (t13nLangs.length > 0 && t13nLangs[0] != '') {
+var f = document.getElementById('cse-search-box');
+if (!f) {
+f = document.getElementById('searchbox_demo');
+}
+if (f && f.q) {
+f.innerHTML = '<table><tr>' +
+'<td><div id="t13nc"></div></td>' +
+'<td>' + f.innerHTML + '</td>' +
+'</tr></table>';
+function onLoad() {
+var options = {
+sourceLanguage: 'en',
+destinationLanguage: t13nLangs,
+shortcutKey: 'ctrl+g',
+transliterationEnabled: true
+};
+var control =
+new google.elements.transliteration.TransliterationControl(options);
+control.makeTransliteratable([f.q]);
+control.showControl('t13nc');
+}
+google.setOnLoadCallback(onLoad);
+}
+}
+})();

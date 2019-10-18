@@ -1,0 +1,749 @@
+--##############################################################################
+--
+--Copyright (C) 2003  Aviral Mittal
+--
+--All rights reserved. Reproduction in whole or part is prohibited
+--without the written permission of the copyright owner.
+--
+--##############################################################################
+
+LIBRARY ieee;
+USE ieee.STD_LOGIC_1164.ALL;
+USE ieee.numeric_std.ALL;
+
+--TOP ENTITY NAME : dramcntrl
+--ARCHITECTURE NAME : rtl
+
+ENTITY dramcntrl IS
+    GENERIC (
+            del : integer := 15; -- will be used to scale the 100 us counter
+            len_auto_ref : integer := 10; -- will be used to count no of 
+                                          -- pending auto refs which are needed
+            len_small : integer := 8; -- will be used to count times for trc,
+                                       --tRFC t..etc..etc after INIT has been
+                                       --done
+            addr_bits_to_dram : integer := 13;
+            addr_bits_from_up : integer := 24;
+            ba_bits : integer := 2 
+            );
+
+    PORT (
+        --dram pins Starts
+
+        addr  : OUT    STD_LOGIC_VECTOR (addr_bits_to_dram - 1 DOWNTO 0) ;
+        ba    : OUT    STD_LOGIC_VECTOR (ba_bits - 1 DOWNTO 0);
+        clk   : OUT    STD_LOGIC ;
+        cke   : OUT    STD_LOGIC ;
+        cs_n  : OUT    STD_LOGIC ;
+        ras_n : OUT    STD_LOGIC ;
+        cas_n : OUT    STD_LOGIC ;
+        we_n  : OUT    STD_LOGIC ;
+        dqm   : OUT    STD_LOGIC_VECTOR (1 DOWNTO 0) ;
+        --dram pins Ends
+        
+
+        --clk and reset signals Starts
+        clk_in : IN STD_LOGIC;
+        reset  : IN STD_LOGIC;
+        --clk and reset signals Ends
+	
+	--dram_control_pins at up IF Starts
+        addr_from_up : IN STD_LOGIC_VECTOR (addr_bits_from_up -1 DOWNTO 0) ;
+        rd_n_from_up : IN STD_LOGIC ;
+        wr_n_from_up : IN STD_LOGIC ;
+        bus_term_from_up : IN STD_LOGIC ;
+        dram_init_done  : OUT STD_LOGIC ;
+        rd_dat_from_dram_ready : OUT STD_LOGIC ; -- needs more consideration
+        dram_busy : OUT STD_LOGIC 
+	--dram_control_pins at up IF Ends
+	
+      
+        );
+
+END dramcntrl;
+
+--##############################################################################
+--Architecture starts here
+--##############################################################################
+
+ARCHITECTURE rtl OF dramcntrl IS
+
+
+--##############################################################################
+--The following function increments an std_logic_vector type by '1'
+--typical usage next_count <= incr_vec(next_count);
+--when count reaches the highest value(all ones), the next count is zero.
+--##############################################################################
+
+--Function Declaration Section 
+FUNCTION incr_vec(s1:STD_LOGIC_VECTOR) return STD_LOGIC_VECTOR is 
+                  --this function increments a STD_LOGIC_VECTOR type by '1' 
+        VARIABLE V : STD_LOGIC_VECTOR(s1'high DOWNTO s1'low) ; 
+        VARIABLE tb : STD_LOGIC_VECTOR(s1'high DOWNTO s1'low); 
+        BEGIN 
+        tb(s1'low) := '1'; 
+        V := s1; 
+        for i in (V'low + 1) to V'high loop 
+            tb(i) := V(i - 1) and tb(i -1); 
+        end loop; 
+        for i in V'low to V'high loop 
+            if(tb(i) = '1') then 
+                V(i) := not(V(i)); 
+            end if; 
+        end loop; 
+        return V; 
+        end incr_vec; -- end function 
+
+--##############################################################################
+--The following function decrements an std_logic_vector type by '1'
+--typical usage next_count <= incr_vec(next_count);
+--when count reaches the lowest value(all zeros), the next count is all ones.
+--##############################################################################
+
+        FUNCTION  dcr_vec(s1:std_logic_vector) return std_logic_vector is
+                  --this function decrements a std_logic_vector type by '1'
+        VARIABLE V : std_logic_vector(s1'high downto s1'low) ;
+        VARIABLE tb : std_logic_vector(s1'high downto s1'low);
+        BEGIN
+        tb(s1'low) := '0';
+        V := s1;
+        for i in (V'low + 1) to V'high loop
+            tb(i) := V(i - 1) or tb(i -1);
+        end loop;
+        for i in V'low to V'high loop
+            if(tb(i) = '0') then
+                V(i) := not(V(i));
+            end if;
+        end loop;
+        return V;
+        end dcr_vec; -- end function
+
+
+--Function Declaration Section Ends
+
+
+--Signal Declaration Section
+
+  --SIGNAL delay_reg_int : integer range 0 to 2**14 -1 ;
+  SIGNAL delay_reg : STD_LOGIC_VECTOR( del - 1 downto 0) ;
+  SIGNAL addr_sig  : STD_LOGIC_VECTOR (addr_bits_to_dram - 1 DOWNTO 0) ;
+  SIGNAL ba_sig    : STD_LOGIC_VECTOR(ba_bits - 1 DOWNTO 0) ;
+
+  SIGNAL dram_init_done_s   : STD_LOGIC ;
+  SIGNAL dram_init_done_s_del   : STD_LOGIC ;
+  SIGNAL reset_del_count   : STD_LOGIC ; --it will reset the delay counter
+  --when the dram is ready so that the delay counter now becomes the counter
+  --which will count for auto refereshes i.e 7.81 us
+
+  SIGNAL command_bus   : STD_LOGIC_VECTOR (5 DOWNTO 0) ;
+  --bit 5 = cs
+  --bit 4 = ras
+  --bit 3 = cas
+  --bit 2 = we
+  --bit 1 = dqm(1)
+  --bit 0 = dqm(0)
+
+  SIGNAL no_of_refs_needed   : STD_LOGIC_VECTOR(len_auto_ref - 1 downto 0) ;
+  SIGNAL one_auto_ref_time_done   : STD_LOGIC ;
+  SIGNAL one_auto_ref_complete: STD_LOGIC ;
+
+  SIGNAL auto_ref_pending : STD_LOGIC ;
+  SIGNAL write_req_pending: STD_LOGIC ;
+
+  SIGNAL small_count: STD_LOGIC_VECTOR(len_small - 1 downto 0) ;
+  SIGNAL small_all_zeros: STD_LOGIC;
+
+  SIGNAL wr_n_from_up_del_1: STD_LOGIC;--to produce a pulse on wr_n_form_up
+  SIGNAL wr_n_from_up_del_2: STD_LOGIC;--to produce a pulse on wr_n_form_up
+  SIGNAL wr_n_from_up_pulse: STD_LOGIC;--to pulsed wr_n_form_up
+
+  --SIGNAL wr_active_done: STD_LOGIC;--to know if active command has been issued
+                                   --following a write sequence
+  SIGNAL en_path_up_to_dram: STD_LOGIC;--en direction of data flwo up->dram
+  SIGNAL en_path_dram_to_up: STD_LOGIC;--en direction of data flwo dram->up
+
+  SIGNAL rd_wr_just_terminated: STD_LOGIC;--It will logg the status that rd or 
+                              --write is just terminated. and and auto precharge 
+                              --is needed.It is here to let autoprecharge be done
+  SIGNAL dram_busy_sig : STD_LOGIC;--means that dram is doing auto_ref cycle.
+
+--Signal Declaration Section Ends
+
+--Constants Declaration Section
+  CONSTANT mod_reg_val     : std_logic_vector(11 downto 0) := "000000100111";
+  -- ll,10 = reserved, 
+  -- 9 = '0' programmed burst length, Burst len applicable for rd and wr both 
+  -- 8,7 = Op mode = 00
+  -- 6,5,4 = CAS latency = 010 = cas latency of 2 
+  -- 3 = Burst Type = '0' = Sequential
+  -- 2,1,0 = Brust Length = 111 = Full Page Brust
+
+  CONSTANT sd_init     : integer := 10000; -- = 1000 * f in MHz 
+  CONSTANT trp         : integer := 4;     -- = 20 ns (20 ns < (trp - 1)* T);
+  CONSTANT trfc        : integer := 8;     -- = 66 ns (66 ns < (trfc - 1)* T);
+  CONSTANT tmrd        : integer := 3;     -- = 2 Wait time after Mode reg prog
+  CONSTANT trcd        : integer := 2;     -- = 15 ns (15 ns < (trcd)*T)
+                         --trcd is the time which must be consumed after the 
+                         --issuence of ACTIVE and before any other command can
+                         --be issued
+
+  CONSTANT auto_ref_co : integer := 780;   -- = auto_ref_co > 7.81 * F in MHz
+
+---------------------------------------------------------------rc-dd
+--------------------------------------------------------------caawqq
+--------------------------------------------------------------sssemm
+  CONSTANT inhibit         : std_logic_vector(5 downto 0) := "111111";
+  CONSTANT nop             : std_logic_vector(5 downto 0) := "011111";
+  CONSTANT active          : std_logic_vector(5 downto 0) := "001111";
+  CONSTANT read            : std_logic_vector(5 downto 0) := "010100"; --tbd
+  CONSTANT write           : std_logic_vector(5 downto 0) := "010000"; --tbd
+  CONSTANT burst_terminate : std_logic_vector(5 downto 0) := "011011";
+  CONSTANT precharge       : std_logic_vector(5 downto 0) := "001011";
+  CONSTANT auto_ref        : std_logic_vector(5 downto 0) := "000111";
+  CONSTANT load_mode_reg   : std_logic_vector(5 downto 0) := "000011";
+
+  CONSTANT read_high_byte  : std_logic_vector(5 downto 0) := "011111"; --tbd
+  CONSTANT read_low_byte   : std_logic_vector(5 downto 0) := "011111"; --tbd
+  CONSTANT write_high_byte : std_logic_vector(5 downto 0) := "011111"; --tbd
+  CONSTANT write_low_byte  : std_logic_vector(5 downto 0) := "011111"; --tbd
+
+  CONSTANT rd_wr_in_prog   : std_logic_vector(5 downto 0) := "011100"; --tbd
+  --the above constant signifies that a read or wirte burst is in progress
+  --dqms are 00 else it is a NOP
+
+--Constants Declaration Section Ends
+
+BEGIN
+
+--Steps needed by SDRAM to intitialize
+
+--#1. Power up initialization time taken 100 us, one, either NOP or INHIBIT
+--    Command is MUST within this period -- as per specs
+
+--#2. PRECHARGE Command MUST be issued
+
+--#3. 2 AUTO REFRESH cycles MUST be performed
+
+--#4. Mode Register may be programmed now.
+
+--Steps needed by SDRAM to initialize Ends
+
+--Steps needed by SDRAM to write data
+
+--#1). Get the address from up, store the address, Activate the corresponding
+--     Row. by providing A0 to A12(which will select the ROW) and BA0, BA1
+--     which will select the Coloumn
+--
+--#2). Wait for trcd = 15 ns  while putting NOP on the command bus
+--     provide  A0 through A9, A11 in case of (x4), A0 through A9 in case of
+--     (x8) , A0 through A8 in case of (x16). We will use (x8)
+--#3). Issue the Coloumn address with the choice of A10 = 0 for Disable Auto
+--     Precharge, A10 = 1 for Enable Auto Precharge.We will use Auto Precharge
+--     DISABLED But here in case of Burst length = full page we do not need
+--     A10 functiionality since it is not used in this cycle.
+
+--Steps needed by SDRAM to write data Ends
+
+
+--Steps needed by SDRAM to Maintain data
+
+--The SDRAM MUST be AUTO REFERESHED every 7.81 us or 7810 ns
+--if f is the clock freq, then T = 1/f, so n * 1/F = 7810,so n=7.81*f in MHz
+--Here f = 100 MHz, so n = 781. Every 781 clocks, an Auto Ref is needed.
+--It may be possible, to apply 8192 Auto refs Once in 64 ms or Once in
+--64000 * f in HHz clock cycles, we take f  100 MHz, so every 6400000 clock 
+--cycles, we need a burst of 8192 Auto refereshs
+
+--Steps needed by SDRAM to Maintain data Ends
+
+
+--##############################################################################
+--  Process: This process increments a counter to get a 100 us delay
+--          as needed by the dram for initialization. After it is 
+--          done, this counter is used to generate the scheduled
+--          auto refereshes which must be done once every 7.81 us
+--          This counter will just let know everybody that this 
+--          time is over and ONE auto_referesh is scheduled. It is 
+--          the responsibility of some other block to collect this
+--          info and actually produce the auto refereshes signals 
+--          Since it is not required that it is MUST to perform
+--          auto referesh @ 7.81 rate, since all the 8192 bursts of
+--          auto refresh could be done at once, it is decided that
+--          the number of auto refereshes will be scheduled, and
+--          once the up is done with its current READ WRITE 
+--          operation, the number of auto refereshes sheduled will
+--          be performed, all at once. Since this code will support
+--          page burst mode, it is anticipated, that the up may 
+--          keep a READ or WRITE asserted > 7.81 us in worst case
+--##############################################################################
+
+	init_delay_reg: PROCESS(clk_in)
+	BEGIN
+          IF(RISING_EDGE(clk_in)) THEN
+            IF(reset = '1') THEN
+              delay_reg <= (others => '0');
+              one_auto_ref_time_done <= '0';
+            ELSE
+              IF(reset_del_count = '1') THEN 
+                delay_reg <= (others => '0');
+              --it is imp that in the following elsif, dram_init_done_s_del
+              --is considered instead of dram_init_done_s because the event 
+              --following this should ensure that reset_del_count has no 
+              --activity thereafter
+              --in case we use dram_init_done_s signal, then we are not sure
+              --that reset_del_count has done its job, we want to make suer 
+              --that reset_del_count has done its job before 'delay_reg' 
+              --counter can be used to generate the 7.81 us stuff
+              --and since dram_init_done_s_del is guranteed to come after
+              --reset_del_count, it is safe to use it in followine elsif
+              ELSIF(dram_init_done_s_del = '1') THEN
+                IF(to_integer(unsigned(delay_reg)) = auto_ref_co) THEN
+                --it means that the delay_reg has counted enough i.e 780 clocks
+                --and we are ready to schedule a referesh
+                  delay_reg <= (others => '0');
+                  one_auto_ref_time_done <= '1';
+                ELSE
+                  delay_reg <= incr_vec(delay_reg);
+                  one_auto_ref_time_done <= '0';
+                END IF;
+              ELSE
+                  delay_reg <= incr_vec(delay_reg);
+                  one_auto_ref_time_done <= '0';
+              END IF; --(reset_del_count = '1')
+            END IF; --(reset = '1')
+          END IF; --(RISING_EDGE(clk_in))
+	END PROCESS init_delay_reg;
+
+--##############################################################################
+--  Process:  
+--##############################################################################
+
+	init_auto_ref_count_reg: PROCESS(clk_in)
+	BEGIN
+          IF(RISING_EDGE(clk_in)) THEN
+              no_of_refs_needed <= (others => '0');
+            IF(reset = '1') THEN
+            ELSE
+              IF(dram_init_done_s = '1') THEN
+                IF(no_of_refs_needed = "1111111111") THEN
+                  no_of_refs_needed <= no_of_refs_needed;
+                ELSE
+                  --auto_ref_tim_done will be '1' for one clock cycle just
+                  --after 780 clocks
+                  IF(one_auto_ref_time_done = '1') THEN
+                    no_of_refs_needed <= incr_vec(no_of_refs_needed); 
+                  ELSIF(one_auto_ref_complete = '1') THEN
+                    --it must be checked if my some means tht no_of_refs_needed
+                    --counter is going below 0, that means it is an error
+                    --however it is commented at present to run the sims as now
+                    --IF(no_of_refs_needed = "0000000000") THEN
+                    --  no_of_refs_needed <= no_of_refs_needed; 
+                    --ELSE
+                      no_of_refs_needed <= dcr_vec(no_of_refs_needed); 
+                    --END IF;
+                  END IF;
+                END IF;
+              END IF; --IF(dram_init_done_s = '1') THEN
+            END IF; --(reset = '1')
+          END IF; --(RISING_EDGE(clk_in))
+	END PROCESS init_auto_ref_count_reg;
+
+
+--##############################################################################
+--  Process:  
+--##############################################################################
+
+	init_reg: PROCESS(clk_in)
+	BEGIN
+          IF(RISING_EDGE(clk_in)) THEN
+            IF(reset = '1') THEN
+              dram_init_done_s <= '0';
+              command_bus <= inhibit;
+              one_auto_ref_complete <= '0';
+              rd_wr_just_terminated <= '0';
+              addr_sig <= (others => '0');
+              ba_sig <= (others => '0');
+            ELSE
+              IF(dram_init_done_s = '0') THEN
+                ----------------------------------------------------
+                --dram init starts
+                ----------------------------------------------------
+                IF(to_integer(unsigned(delay_reg)) = sd_init) THEN
+                  dram_init_done_s <= dram_init_done_s;
+                  command_bus <= precharge;
+                  one_auto_ref_complete <= one_auto_ref_complete;
+                  rd_wr_just_terminated <= rd_wr_just_terminated;
+                  addr_sig <= (others => '0');
+                  addr_sig(10) <=  '1';
+                  ba_sig <= ba_sig;
+                ELSIF(to_integer(unsigned(delay_reg)) = sd_init + trp) THEN
+                  dram_init_done_s <= dram_init_done_s;
+                  command_bus <= auto_ref;
+                  one_auto_ref_complete <= one_auto_ref_complete;
+                  rd_wr_just_terminated <= rd_wr_just_terminated;
+                  addr_sig <= (others => '0');
+                  ba_sig <= ba_sig;
+                ELSIF(to_integer(unsigned(delay_reg))
+                = sd_init + trp + trfc ) THEN
+                  dram_init_done_s <= dram_init_done_s;
+                  command_bus <= auto_ref;
+                  one_auto_ref_complete <= one_auto_ref_complete;
+                  rd_wr_just_terminated <= rd_wr_just_terminated;
+                  addr_sig <= (others => '0');
+                  ba_sig <= ba_sig;
+                ELSIF(to_integer(unsigned(delay_reg)) = 
+                sd_init + trp + 2*trfc ) THEN
+                  dram_init_done_s <= dram_init_done_s;
+                  command_bus <= load_mode_reg;
+                  one_auto_ref_complete <= one_auto_ref_complete;
+                  rd_wr_just_terminated <= rd_wr_just_terminated;
+                  addr_sig <= (others => '0');
+                  addr_sig(11 downto 0) <= mod_reg_val;
+                  ba_sig <= ba_sig;
+                ELSIF(to_integer(unsigned(delay_reg)) = 
+                sd_init + trp + 2*trfc + tmrd) THEN
+                  dram_init_done_s <= '1';
+                  command_bus <= nop; 
+                  one_auto_ref_complete <= one_auto_ref_complete;
+                  rd_wr_just_terminated <= rd_wr_just_terminated;
+                  addr_sig <= (others => '0');
+                  ba_sig <= ba_sig;
+                ELSE
+                  dram_init_done_s <= dram_init_done_s;
+                  command_bus <= nop; 
+                  dram_init_done_s <= dram_init_done_s;
+                  one_auto_ref_complete <= one_auto_ref_complete;
+                  rd_wr_just_terminated <= rd_wr_just_terminated;
+                  addr_sig <= (others => '0');
+                  addr_sig(10) <=  addr_sig(10);
+                  ba_sig <= ba_sig;
+                END IF;
+                ----------------------------------------------------
+                --dram init is done
+                ----------------------------------------------------
+
+
+                ----------------------------------------------------
+                --dram write
+                ----------------------------------------------------
+                --The following two lines together suggest that the
+                --write operation is just started. Therefore a active
+                --command is issued immediately
+                --IT is V.IMP to note that a row can be made active 
+                --upon the rd or wr request form up ONLY when the
+                --previous operation is OVER. OVER means, the 
+                --bank related to previous access has been PRECHARGED
+                --which is known here by rd_wr_just_terminated signal
+                --this signal goes '1' just after a request fom up to
+                --put rd/wr over, and it goes back to '0', when 
+                --precharge is finished.
+              ELSIF((wr_n_from_up = '0') AND (rd_wr_just_terminated = '0'))THEN
+                IF(wr_n_from_up_del_1 = '1') THEN -- means a pulse on 
+                                                  --  +ive eged of wr_n
+                  ba_sig <= addr_from_up(23 downto 22) ;
+                  command_bus <= active; 
+                  --address organisation at present
+                  --23 downto 22 are bank selectors, total banks = 4
+                  --21 downto 9  are row  selectors, total rows  = 8192
+                  --9  downto 0  are col  selectors, total cols  = 512
+                  --total space available 4 x 8192 x 512 = 16 Meg
+                  --the following need attention, as it is using hard coded
+                  --numbers, should be made functions of generics declared
+                  --above ################
+                  addr_sig <= addr_from_up(21 downto 9) ; 
+                ELSIF(to_integer(unsigned(small_count)) = trcd) THEN
+                  ba_sig <= addr_from_up(23 downto 22) ;
+                  command_bus <= write;
+                  addr_sig(8 downto 0) <= addr_from_up(8 downto 0) ; 
+                ELSE
+                  ba_sig <= ba_sig;
+                  command_bus <= rd_wr_in_prog; --dqm is 00 else its a NOP
+                  addr_sig <= addr_sig; 
+                END IF;
+                ----------------------------------------------------
+                --dram write Ends
+                ----------------------------------------------------
+
+
+                ----------------------------------------------------
+                --dram read
+                ----------------------------------------------------
+              ELSIF((rd_n_from_up = '0')  AND (rd_wr_just_terminated = '0'))THEN
+                IF(wr_n_from_up_del_1 = '1') THEN
+                  ba_sig <= addr_from_up(23 downto 22) ;
+                  command_bus <= active; 
+                  addr_sig <= addr_from_up(21 downto 9) ; 
+                ELSIF(to_integer(unsigned(small_count)) = trcd) THEN
+                  ba_sig <= ba_sig;
+                  command_bus <= read;
+                  addr_sig(8 downto 0) <= addr_from_up(8 downto 0) ; 
+                ELSE
+                  ba_sig <= ba_sig;
+                  command_bus <= rd_wr_in_prog; --dqm is 00 else its a NOP
+                  addr_sig <= addr_sig; 
+                END IF;
+                ----------------------------------------------------
+                --dram read Ends
+                ----------------------------------------------------
+
+                ----------------------------------------------------
+                --Burst Terminate when rd or wr operation finishes
+                --It is to be noted that the signal 
+                --wr_from_up_del_1 is a function of rd_from_up_as well
+                --so while wr_n_from_up = 1 or rd_n_from_up = 1, and
+                --_del_1 signal is 0, it means that its a +ive edge on
+                --either wr_n or rd_n meaning as termination of read/write
+                --request from the up
+                ----------------------------------------------------
+              ELSIF((wr_n_from_up = '1' OR rd_n_from_up = '1') 
+                   AND (wr_n_from_up_del_1 = '0')) THEN
+                  command_bus <= burst_terminate; 
+                  rd_wr_just_terminated <= '1';
+
+              ELSIF(rd_wr_just_terminated = '1') THEN
+                    IF(to_integer(unsigned(small_count)) = 1) THEN
+                      ba_sig <= addr_from_up(23 downto 22) ;
+                      command_bus <= precharge;
+                      addr_sig <= addr_sig; 
+                      rd_wr_just_terminated <= '1';
+                    ELSIF(to_integer(unsigned(small_count)) = trp) THEN
+                      ba_sig <= ba_sig; 
+                      command_bus <= nop;
+                      rd_wr_just_terminated <= '0';
+                      addr_sig <= addr_sig; 
+                    ELSE
+                      ba_sig <= ba_sig; 
+                      command_bus <= nop;
+                      addr_sig <= addr_sig; 
+                      rd_wr_just_terminated <= rd_wr_just_terminated;
+                    END IF;
+
+
+
+                ----------------------------------------------------
+                --dram auto_refereshes
+                ----------------------------------------------------
+              ELSIF(auto_ref_pending = '1') THEN
+              --perform auto ref, and decrement auto ref counter
+                IF (small_all_zeros = '1')THEN
+                --IF (to_integer(unsigned(small_count)) = trp)THEN
+                  command_bus <= auto_ref; 
+                  --auto_ref_in_prog <= '1';
+                  one_auto_ref_complete <= '0'; 
+                ELSIF ((to_integer(unsigned(small_count)) = trfc)) THEN
+                  command_bus <= nop; 
+                  one_auto_ref_complete <= '1'; 
+                  --auto_ref_in_prog <= '0';
+                ELSE
+                  command_bus <= nop; 
+                  one_auto_ref_complete <= '0'; 
+                  --auto_ref_in_prog <= auto_ref_in_prog;
+                END IF;
+                ----------------------------------------------------
+                --dram auto_refereshes Ends
+                ----------------------------------------------------
+              --ELSIF(auto_ref_pending = '0') THEN
+              END IF; --(if dram_init_done_s = '1')
+            END IF; --IF(reset = '1')
+          END IF; --IF(RISING_EDGE(clk_in))
+	END PROCESS init_reg;
+
+--##############################################################################
+--  Process:  
+--##############################################################################
+
+	reset_del_count_gen_reg: PROCESS(clk_in)
+	BEGIN
+        IF(RISING_EDGE(clk_in)) THEN
+          dram_init_done_s_del <= dram_init_done_s;
+        END IF;
+	END PROCESS reset_del_count_gen_reg;
+
+--generate a pulse on reset_del_count while dram_init_done_s goes high
+reset_del_count <= dram_init_done_s AND not(dram_init_done_s_del);
+
+
+--##############################################################################
+--  Process:  
+--##############################################################################
+	gen_auto_ref_pending_cmb: PROCESS (no_of_refs_needed)
+
+	BEGIN
+        IF(to_integer(unsigned(no_of_refs_needed)) = 0) THEN 
+          auto_ref_pending <= '0';
+        ELSE
+          auto_ref_pending <= '1';
+        END IF;
+	END PROCESS gen_auto_ref_pending_cmb;
+
+
+--##############################################################################
+--  Process: This process is responsible for generating counts for
+--           producing delays after a command is issued to the dram
+--           to ensure the various timing requirements for the dram
+--           It is thaught that this counter is reset as soon as
+--           any command is issued, therafter we can produce delays
+--           w.r.t the count held in this register
+--           since a command is characterized by command_bus(4)
+--           command_bus(3) and command_bus(2), if any of them is
+--           '0', we will reset this counter. 
+--           This counter will be free running. 
+--##############################################################################
+
+	small_count_reg: PROCESS(clk_in,reset)
+        VARIABLE all_ones: std_logic;
+	BEGIN
+        IF(reset = '1') THEN
+            small_count <= (others => '0');
+        ELSIF(RISING_EDGE(clk_in)) THEN
+          --IF((command_bus(2) = '0') OR (command_bus(3) = '0') 
+          --OR (command_bus(4) = '0')) THEN
+            all_ones  := small_count(0);
+            FOR i in 1 to len_small - 1 LOOP
+              all_ones := all_ones AND small_count(i);
+            END LOOP;
+            IF((one_auto_ref_time_done = '1' AND wr_n_from_up = '1'
+                AND rd_n_from_up = '1') OR 
+              --above means when there is no read or write cycle going on
+              --then only auto ref events happen
+              (one_auto_ref_complete = '1' AND wr_n_from_up = '1'
+                AND rd_n_from_up = '1') OR 
+              --above means when there is no read or write cycle going on
+              --then only auto ref events happen
+
+              (wr_n_from_up_del_1 = '0' AND rd_n_from_up = '1'
+               AND wr_n_from_up = '1') OR
+              --the above means, that its just that a read or write is 
+              --over
+
+              (wr_n_from_up_pulse = '1') OR
+
+              (  (to_integer(unsigned(small_count)) = trp) AND
+                 (rd_wr_just_terminated = '1')  )
+
+              ) THEN
+              --the above means, that just after the read and wirte is over
+              --the issued precharge command is also over, the small counter
+              --needs to be reset, in order to count for an auto_ref cycle.
+
+
+              --In summary the reset of the small_count will be performed
+              --1) In auto referesh mode, at each referesh compete
+              --2) During write operation to count the trcd which is the wait
+              --3) During read  operation to count the trcd which is the wait
+              --   Time after ACTIVE COMMAND
+              --4) Just after READ/WRITE command is over, for PRECHARGE op
+              --5).Just after READ/WRITE command is over and PRECHARGE is also
+                   --over, so that it starts fresh counting for A_REF.
+
+              small_count <= (others => '0');
+            ELSIF(all_ones = '1') THEN
+              small_count <= small_count;
+            ELSE
+              --Let the small_count until it reaches its max value
+              --where it will hang and wait for further reset command issued
+              --As written above
+              --IF((wr_n_from_up = '0') OR (rd_n_from_up = '0') 
+              --OR (auto_ref_pending = '1')) THEN
+                small_count <= incr_vec(small_count);
+              --ELSE
+              --  small_count <= small_count;
+              --END IF;
+            END IF; -- IF(all_ones = '1')
+          --END IF; --((command_bus(2) = '0')...
+        END IF; --reset
+        --END IF; --(RISING_EDGE(clk_in))
+
+	END PROCESS small_count_reg;
+
+--##############################################################################
+--  Process:  
+--##############################################################################
+	gen_small_all_zeros_cmb: PROCESS (small_count)
+	VARIABLE small_all_zeros_var: std_logic;
+	BEGIN
+          small_all_zeros_var := small_count(0);
+        FOR i in 1 to len_small - 1 LOOP
+          small_all_zeros_var := small_all_zeros_var OR small_count(i);
+        END LOOP;
+        small_all_zeros <= not(small_all_zeros_var);
+	END PROCESS gen_small_all_zeros_cmb;
+
+--##############################################################################
+--  Process:  
+--##############################################################################
+
+	wr_n_from_up_del_reg: PROCESS(clk_in)
+	BEGIN
+        IF(RISING_EDGE(clk_in)) THEN
+          wr_n_from_up_del_1 <= wr_n_from_up AND rd_n_from_up;
+          wr_n_from_up_del_2 <= wr_n_from_up_del_1;
+        END IF;
+	END PROCESS wr_n_from_up_del_reg;
+        wr_n_from_up_pulse <= not(wr_n_from_up AND rd_n_from_up) 
+                                 AND (wr_n_from_up_del_1);
+        --wr_n_from_up_pulse <= not(wr_n_from_up_del_1) AND (wr_n_from_up_del_2);
+
+--##############################################################################
+--  Process:  
+--##############################################################################
+
+	dram_busy_gen: PROCESS(clk_in)
+        BEGIN
+        IF(RISING_EDGE(clk_in)) THEN
+          IF(reset = '1') THEN
+            dram_busy_sig <= '0';
+          ELSE
+            IF((to_integer(unsigned(no_of_refs_needed)) /= 0) AND 
+            (( wr_n_from_up_del_1 = '0' AND 
+               rd_n_from_up = '1' AND wr_n_from_up = '1'))) THEN
+              dram_busy_sig <= '1';
+            ELSIF((to_integer(unsigned(no_of_refs_needed)) /= 0) AND
+            ( wr_n_from_up = '0' OR rd_n_from_up = '0')) THEN
+              dram_busy_sig <= '0';
+            ELSIF(to_integer(unsigned(no_of_refs_needed)) = 0) THEN
+              dram_busy_sig <= '0';
+            ELSE
+              dram_busy_sig <= '1';
+            END IF;
+          END IF;
+        END IF;
+	END PROCESS dram_busy_gen;
+
+--##############################################################################
+--  Process:  
+--##############################################################################
+
+	cke_gen_reg: PROCESS(clk_in)
+        BEGIN
+          IF(RISING_EDGE(clk_in)) THEN
+            IF(reset = '1') THEN
+              cke <= '0';
+            ELSE
+              cke <= '1';
+            END IF;
+          END IF;
+	END PROCESS cke_gen_reg;
+
+clk  <= clk_in ;
+
+cs_n <= command_bus(5);
+ras_n <= command_bus(4);
+cas_n <= command_bus(3);
+we_n <= command_bus(2);
+dqm <= command_bus(1 downto 0);
+dram_init_done <= dram_init_done_s;
+addr <= addr_sig;
+dram_busy <= dram_busy_sig ;
+ba <= ba_sig;
+
+END rtl;
+
+--##############################################################################
+--OPTIONAL CONFIGURATION STATEMENT BELOW, can be UNCOMMENTED IF DESIRED
+--##############################################################################
+
+--CONFIGURATION dramcntrl_conf OF dramcntrl IS
+--  FOR rtl
+--  END FOR;
+--END dramcntrl_conf;

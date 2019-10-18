@@ -1,0 +1,66 @@
+--------------------------------------------------------------------------------------
+Timing Analyzer Summary
+--------------------------------------------------------------------------------------
+
+Type           : Worst-case tsu
+Slack          : N/A
+Required Time  : None
+Actual Time    : 9.471 ns
+From           : CMD[0]
+To             : sig_doReset
+From Clock     : --
+To Clock       : CLK
+Failed Paths   : 0
+
+Type           : Worst-case tco
+Slack          : N/A
+Required Time  : None
+Actual Time    : 5.703 ns
+From           : sig_command[0]
+To             : oDRAM0_LDQM0
+From Clock     : CLK
+To Clock       : --
+Failed Paths   : 0
+
+Type           : Worst-case th
+Slack          : N/A
+Required Time  : None
+Actual Time    : -5.992 ns
+From           : CMD[1]
+To             : sig_doWrite
+From Clock     : --
+To Clock       : CLK
+Failed Paths   : 0
+
+Type           : Clock Setup: 'pll1:pll|altpll:altpll_component|_clk0'
+Slack          : 5.447 ns
+Required Time  : 100.00 MHz ( period = 10.000 ns )
+Actual Time    : 219.64 MHz ( period = 4.553 ns )
+From           : sig_delay[2]
+To             : sig_ba[0]
+From Clock     : pll1:pll|altpll:altpll_component|_clk0
+To Clock       : pll1:pll|altpll:altpll_component|_clk0
+Failed Paths   : 0
+
+Type           : Clock Hold: 'pll1:pll|altpll:altpll_component|_clk0'
+Slack          : 0.391 ns
+Required Time  : 100.00 MHz ( period = 10.000 ns )
+Actual Time    : N/A
+From           : sig_command[0]
+To             : sig_command[0]
+From Clock     : pll1:pll|altpll:altpll_component|_clk0
+To Clock       : pll1:pll|altpll:altpll_component|_clk0
+Failed Paths   : 0
+
+Type           : Total number of failed paths
+Slack          : 
+Required Time  : 
+Actual Time    : 
+From           : 
+To             : 
+From Clock     : 
+To Clock       : 
+Failed Paths   : 0
+
+--------------------------------------------------------------------------------------
+

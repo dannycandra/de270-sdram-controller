@@ -1,0 +1,986 @@
+    ----------------------------------------------------------------------------------
+    -- Company:       FTZ-Leipzig
+    -- Engineer:       Tobias Rudloff
+    -- 
+    -- Create Date:    13:47:10 10/24/2007
+    -- Design Name:
+    -- Module Name:    sdram_controller_main - Behavioral
+
+    -- Description:
+    --
+    -- Revision:
+    -- Revision 0.01 - File Created
+    -- Additional Comments:
+    --
+    ----------------------------------------------------------------------------------
+    --library IEEE;
+    --use IEEE.STD_LOGIC_1164.all;
+    --
+    --package sdram_package is
+    --
+    --constant ADDR_SIZE  : integer:= 23;
+    --constant DATA_SIZE  : integer:= 16;
+    --constant ROWSTART   : integer:= 8;         
+    --constant ROWSIZE    : integer:= 12;
+    --constant COLSTART   : integer:= 0;
+    --constant COLSIZE    : integer:= 8;
+    --constant BANKSTART  : integer:= 20;
+    --constant BANKSIZE   : integer:= 2;
+    --constant INIT_PER   : integer:= 48000;--96 bis 120MHz
+    --constant REF_PER    : integer:= 2148;   --96 bis 120MHz
+    --constant SC_RCD      : integer:= 3;
+    --constant SC_PM      : integer:= 0;    -- 0=Burst Write/1=Single Write(BL automatisch 1)
+    --constant SC_CL      : integer:= 3;   -- CAS Latency
+    --constant SC_BT      : integer:= 0;   -- Burst Type (0=seqeuntial/1=interleave)
+    --constant SC_BL      : integer:= 8;   -- Burst Mode 
+    --constant SC_BSQ_RD    : integer:= 0;    -- Burst Sequence    0 --> Order 01234567
+    --                              --      (Lesen)      1 --> Order 12345670
+    --                              --                2 --> Order 23456701
+    --                              --                3 --> Order 34567012
+    --                              --                4 --> Order 45670123
+    --                              --                5 --> Order 56701234
+    --                              --                6 --> Order 67012345
+    --                              --                7 --> Order 70123456
+    --constant SC_BSQ_WR    : integer:= 0;    -- Burst Sequence    0 --> Order 01234567
+    --                              --     (Schreiben)   1 --> Order 12345670
+    --                              --                2 --> Order 23456701
+    --                              --                3 --> Order 34567012
+    --                              --                4 --> Order 45670123
+    --                              --                5 --> Order 56701234
+    --                              --                6 --> Order 67012345
+    --                              --                7 --> Order 70123456
+    --constant tDQSS      : integer:= 0;
+    --
+    --end sdram_package;
+
+    ----------------------------------------------------------------------------------
+    library IEEE;
+    use IEEE.STD_LOGIC_1164.ALL;
+    use IEEE.STD_LOGIC_ARITH.ALL;
+    use IEEE.STD_LOGIC_UNSIGNED.ALL;
+    use work.sdram_package.ALL;
+
+    entity sdram_controller_main is
+       port(sysclk        :    in std_logic;                           -- Systemtakt
+           dram_clock      :    in std_logic;   
+           reset          :    in std_logic;                           -- Systemreset
+           -- HOST Schnittstellen --
+           addr          :    in std_logic_vector(ADDR_SIZE - 1 downto 0);   -- Addresse fur Controlleranfrage 
+           wr             :    in std_logic;                           -- Schreibanfrage
+           rd             :    in std_logic;                            -- Leseanfrage
+           bst         :     in std_logic;                           -- Burst Stop Command
+           act         :    out std_logic;                           -- SDRAM aktiv
+           done         :   out std_logic;                           -- Lese-/Schreibprozess erledigt
+           data_in      :     in std_logic_vector(DATA_SIZE - 1 downto 0);
+           data_out      :   out std_logic_vector(DATA_SIZE - 1 downto 0);
+           in_req         :   out std_logic;
+           out_valid      :   out std_logic;
+           dram_clk_intern   :   out std_logic;
+           dram_ck        :   out std_logic;
+           dram_cke        :   out std_logic;
+           dram_cs         :   out std_logic;
+           dram_we         :   out std_logic;   
+           dram_cas        :   out std_logic;   
+           dram_ras        :   out std_logic;   
+           dram_dqm      :   out std_logic_vector(DATA_SIZE/8 - 1 downto 0); --LDQM und UDQM
+           dram_ba        :   out std_logic_vector( 1 downto 0);
+           dram_addr       :   out std_logic_vector(11 downto 0);
+           dram_dq       : inout std_logic_vector(DATA_SIZE - 1 downto 0)
+           );
+             
+    end sdram_controller_main;
+
+    architecture Behavioral of sdram_controller_main is
+
+    component control_interface
+       port(CLK      :  in std_logic;
+            RESET_N    :  in std_logic;
+            REF_ACK   :  in std_logic;
+            RD_start   : in std_logic;
+            WR_start   : in std_logic;
+            rd_wr_stop : in std_logic;
+            RD_active  : in std_logic;
+            WR_active  : in std_logic;
+            REFRESH   : out std_logic;
+            PRECHARGE   : out std_logic;
+            LOAD_MODE   : out std_logic;
+            REF_REQ   : out std_logic;
+            INIT_REQ   : out std_logic
+            );
+    end component;
+
+    component command
+       port(CLK       :  in std_logic;
+           RESET_N   :  in std_logic;   
+           SADDR      :  in std_logic_vector(ADDR_SIZE - 1 downto 0);
+           READA      :  in std_logic;
+           WRITEA    :  in std_logic;
+           REFRESH   :  in std_logic;
+           LOAD_MODE :  in std_logic;
+           PALL      :  in std_logic;
+           PRECHARGE :  in std_logic;
+           REF_REQ   :  in std_logic;
+           INIT_REQ  :  in std_logic;
+           PM_STOP   :  in std_logic;
+           REF_ACK   : out std_logic;
+           CM_ACK      : out std_logic;
+           OE         : out std_logic;
+           SA         : out std_logic_vector(11 downto 0);
+           BA         : out std_logic_vector( 1 downto 0);
+           CS_N      : out std_logic;
+           CKE      : out std_logic;
+           RAS_N      : out std_logic;
+           CAS_N      : out std_logic;
+           WE_N      : out std_logic
+           );
+    end component;
+                   
+    component sdr_data_path
+       port(CLK     :  in std_logic;
+            RESET_N :  in std_logic;
+            DATAIN  :  in std_logic_vector(DATA_SIZE - 1 downto 0);
+            DQOUT     : out std_logic_vector(DATA_SIZE - 1 downto 0)
+            );
+    end component;
+
+    SIGNAL sig_CLK        : std_logic;
+    SIGNAL sig_SADDR      : std_logic_vector(ADDR_SIZE - 1 downto 0);
+    SIGNAL sig_READA      : std_logic;
+    SIGNAL sig_WRITEA     : std_logic;
+    SIGNAL sig_REFERESH  : std_logic; 
+    SIGNAL sig_PRECHARGE : std_logic; 
+    SIGNAL sig_LOAD_MODE : std_logic;
+    SIGNAL sig_REF_ACK    : std_logic;
+    SIGNAL sig_REF_REQ    : std_logic;
+    SIGNAL sig_INIT_REQ    : std_logic;
+    SIGNAL sig_CM_ACK    : std_logic;
+    SIGNAL sig_OE       : std_logic;
+    SIGNAL sig_DQOUT    : std_logic_vector(DATA_SIZE - 1 downto 0);
+    SIGNAL sig_PM_STOP    : std_logic;
+    SIGNAL Pre_DONE       : std_logic;
+    SIGNAL Pre_RD       : std_logic;
+    SIGNAL Pre_WR       : std_logic;
+    SIGNAL mDONE       : std_logic;
+    SIGNAL ST          : std_logic_vector(9 downto 0);
+    SIGNAL Read          : std_logic;
+    SIGNAL Write       : std_logic;
+    SIGNAL sig_act        : std_logic;
+    SIGNAL PALL        : std_logic;
+    SIGNAL prePALL         : std_logic;
+    SIGNAL sig_dram_ck     : std_logic;
+
+    SIGNAL burst_stop_command : std_logic:='0';
+    SIGNAL bst_cnt            : std_logic_vector(3 downto 0):=X"0";
+
+    begin
+
+    C2:control_interface
+       port map(CLK         => sysclk,   
+              RESET_N     => reset,       
+              REF_ACK     => sig_REF_ACK,   
+              RD_start  => rd,
+               WR_start  => wr,
+              rd_wr_stop => mDONE,
+              RD_active => Read,
+                WR_active => Write,
+              REFRESH     => sig_REFERESH,   
+              PRECHARGE => sig_PRECHARGE,
+              LOAD_MODE => sig_LOAD_MODE,
+              REF_REQ    => sig_REF_REQ,
+              INIT_REQ    => sig_INIT_REQ
+              );
+
+    C3:command
+       port map(CLK      => sysclk,       
+              RESET_N   => reset,         
+              SADDR      => addr,            
+              READA      => sig_READA,      
+              WRITEA      => sig_WRITEA,   
+              REFRESH   => sig_REFERESH,   
+              LOAD_MODE => sig_LOAD_MODE,
+              PALL      => PALL,
+              PRECHARGE => sig_PRECHARGE,
+              REF_REQ   => sig_REF_REQ,   
+              INIT_REQ  => sig_INIT_REQ,   
+              REF_ACK   => sig_REF_ACK,   
+              CM_ACK      => SIG_CM_ACK,      
+              OE         => sig_OE,      
+              PM_STOP   => sig_PM_STOP,   
+              SA         => dram_addr,      
+              BA         => dram_ba,         
+              CS_N      => dram_cs,         
+              CKE      => dram_cke,         
+              RAS_N      => dram_ras,      
+              CAS_N      => dram_cas,      
+              WE_N      => dram_we      
+              );
+
+    C4:sdr_data_path
+       port map(CLK    => sysclk,   
+              RESET_N => reset,      
+              DATAIN  => data_in,      
+              DQOUT    => sig_DQOUT   
+              );
+
+    dram_clk_intern <= not dram_clock;
+    dram_ck <= not dram_clock;
+
+    process(sysclk)
+
+    begin
+
+    if (sysclk'event and sysclk = '1') then
+       
+       if ((ST >= SC_CL -1 + tDQSS) and (ST <= SC_CL + tDQSS)) then 
+          sig_PM_STOP <= '1';
+       else
+          sig_PM_STOP <= '0';
+       end if;
+
+       if (Write = '1' and ST >= SC_RCD) then                  
+          if (ST >= SC_RCD + SC_BL) then   
+             dram_dqm <= "11";
+          else
+             dram_dqm <= "00";
+          end if;
+       elsif (Read = '1' and ST >= SC_CL) then
+          if (ST >= SC_CL + SC_BL + 1) then   
+             dram_dqm <= "11";
+          else
+             dram_dqm <= "00";
+          end if;
+       else
+          dram_dqm <= "11";
+       end if;
+
+    end if;
+
+    end process;
+
+    sig_act <= Read or Write;
+    act <= sig_act;
+
+    process(sysclk,reset)
+
+    begin
+
+    if (reset = '0') then
+       mDONE       <= '0';
+       ST        <= (others => '0');
+       Pre_RD     <= '0';
+       Pre_WR     <= '0';
+       Read     <= '0';
+       Write     <= '0';
+       out_valid <= '0';
+       in_req     <= '0';
+       PALL <= '0';
+       prePALL <= '0';
+    elsif (sysclk'event and sysclk = '1') then
+       
+       Pre_RD   <=   rd;
+       Pre_WR   <=   wr;
+       case ST is
+          when "0000000000" =>   if (Pre_RD = '0' and rd = '1') then
+                            Read   <=   '1';
+                            Write   <=   '0';
+                            sig_READA <= '1';
+                            ST   <=   "0000000001";
+                         else
+                            if (Pre_WR = '0' and wr = '1') then
+                               Read   <=   '0';
+                               Write   <=   '1';
+                               in_req <= '1';
+                               sig_WRITEA <= '1';
+                               ST   <=   "0000000001";
+                            end if;
+                         end if;
+          when "0000000001" =>   if (SIG_CM_ACK = '1') then
+                               sig_READA <= '0';
+                               sig_WRITEA <= '0';
+                               ST   <=   "0000000010";
+                            end if;
+          when others =>   ST <= ST + 1;
+       end case;
+       
+       if (ST = SC_CL + SC_RCD + SC_BL + 1) then
+          mDONE <= '1';
+       elsif (ST = SC_CL + SC_RCD + SC_BL + 2) then
+          ST <= (others => '0');
+          mDONE <= '0';   
+       end if;
+       
+       if (bst = '1') then
+          burst_stop_command <= '1';
+       else
+          if (burst_stop_command = '1') then
+             if (bst_cnt = SC_CL + SC_RCD - 1) then
+                burst_stop_command <= '0';
+                Read <= '0';
+                Write <= '0';
+                ST <= (others => '0');
+                out_valid <= '0';
+                in_req <= '0';
+                prePALL <= '1';
+                dram_dq <= (others => 'Z');
+             else
+                bst_cnt <= bst_cnt + '1';
+             end if;
+          else
+             prePALL <= '0';
+          end if;
+       end if;
+       
+       if (Read = '1') then
+          dram_dq <= (others => 'Z');
+          if ((ST >= SC_CL + SC_RCD + 1) and (ST <= SC_CL + SC_RCD + SC_BL + 2)) then  --ST = 6...<<14
+             out_valid <= '1';
+             data_out <= dram_dq;
+             if (ST = SC_CL + SC_RCD + SC_BL) then            --ST = 12
+                PALL <= '1';
+             else
+                PALL <= '0';
+             end if;
+             
+             if (ST = SC_CL + SC_RCD + SC_BL + 1) then                     --ST = 13
+                out_valid <= '0';
+                Read <= '0';
+             end if;
+          end if;
+          
+       end if;
+       
+       if (Write = '1') then
+          
+          dram_dq <= sig_DQOUT;
+
+          if (ST = SC_BL) then
+             in_req <= '0';
+          end if;
+          
+          if (ST = SC_CL + SC_BL - 1) then                           
+             PALL <= '1';
+          else
+             PALL <= '0';
+          end if;
+          
+          if (ST = SC_CL + SC_BL + 2) then                         
+             Write <= '0';
+          end if;
+          
+       end if;
+       
+       if (Write = '0' and Read = '0' and prePALL = '0') then
+          PALL <= '0';
+       elsif (Write = '0' and Read = '0' and prePALL = '1') then
+          PALL <= '1';
+       end if;
+       
+    end if;
+
+    end process;
+
+    process(sysclk,reset)
+
+    begin
+
+    if (reset = '0') then
+       done <= '0';
+       Pre_DONE <=   '0';
+    elsif (sysclk'event and sysclk = '1') then
+       Pre_DONE <= mDONE;
+       if (Pre_DONE = '0' and mDONE = '1') then
+          done <= '1';
+       else
+          done <= '0';
+       end if;
+    end if;
+
+    end process;
+
+    end Behavioral;
+
+    --###############################################################################--
+    library IEEE;
+    use IEEE.STD_LOGIC_1164.ALL;
+    use IEEE.STD_LOGIC_ARITH.ALL;
+    use IEEE.STD_LOGIC_UNSIGNED.ALL;
+    use work.sdram_package.ALL;
+
+    entity control_interface is
+       port(CLK      :  in std_logic;
+            RESET_N    :  in std_logic;
+            REF_ACK   :  in std_logic;
+            RD_start   : in std_logic;
+            WR_start   : in std_logic;
+            rd_wr_stop : in std_logic;
+            RD_active  : in std_logic;
+            WR_active  : in std_logic;
+            REFRESH   : out std_logic;
+            PRECHARGE   : out std_logic;
+            LOAD_MODE   : out std_logic;
+            REF_REQ   : out std_logic;
+            INIT_REQ   : out std_logic
+            );
+    end control_interface;
+
+    architecture Behavioral of control_interface is
+
+    signal timer       : integer:=0;
+    signal init_timer  : integer:=0;
+    signal ci_init_req : std_logic;
+
+    constant CI_INIT_PER : integer:= INIT_PER;
+    constant CI_REF_PER  : integer:= REF_PER;
+
+    begin
+
+    INIT_REQ <= ci_init_req;
+
+    process(clk,reset_n)   
+
+    begin
+
+    if (reset_n = '0') then
+       REF_REQ <= '0';
+    elsif (clk'event and clk = '1') then
+
+       if (ci_init_req = '1') then
+          timer <= CI_REF_PER + 200;
+          REF_REQ <= '0';
+       else
+          timer <= timer - 1;
+          if (RD_active = '0' and WR_active = '0') then
+             timer <= timer - 1;
+             if (timer = 0) then
+                REF_REQ <= '1';
+             else
+                timer <= timer - 1;
+             end if;
+          end if;
+       end if;
+
+       if (REF_ACK = '1') then
+          timer <= CI_REF_PER;
+          REF_REQ <= '0';
+       else
+          if (ci_init_req = '1') then
+             timer <= CI_REF_PER + 200;
+             REF_REQ <= '0';
+          else
+             if (RD_active = '0' and WR_active = '0') then
+                timer <= timer - 1;
+                if (timer = 0) then
+                   REF_REQ <= '1';
+                end if;
+             end if;
+          end if;
+       end if;
+    end if;
+
+    end process;
+
+    process(clk,reset_n)
+
+    begin
+
+    if (reset_n = '0') then
+       init_timer <= 0;
+       REFRESH    <= '0';
+       PRECHARGE  <= '0';
+       LOAD_MODE  <= '0';
+       ci_init_req   <= '0';
+    elsif (clk'event and clk = '1') then
+       if (init_timer < (CI_INIT_PER + 201)) then
+          init_timer <= init_timer + 1;
+       end if;
+       if (init_timer < CI_INIT_PER) then
+          REFRESH    <= '0';
+          PRECHARGE <= '0';
+          LOAD_MODE <= '0';
+          ci_init_req <= '1';
+       else
+          if (init_timer = (CI_INIT_PER + 20)) then         --Precharge Befehl als erster
+             REFRESH    <= '0';                        --Befehl der Initialisierungs-
+             PRECHARGE <= '1';                        --sequenz
+             LOAD_MODE <= '0';
+             ci_init_req <= '0';
+          else
+             if (init_timer = (CI_INIT_PER +  40) or          --8 x Refresh Befehl
+                 init_timer = (CI_INIT_PER +  60) or      --wahrend der Initialisierungsphase
+                 init_timer = (CI_INIT_PER +  80) or
+                 init_timer = (CI_INIT_PER + 100) or
+                 init_timer = (CI_INIT_PER + 120) or
+                 init_timer = (CI_INIT_PER + 140) or
+                 init_timer = (CI_INIT_PER + 160) or
+                 init_timer = (CI_INIT_PER + 180)) then
+                REFRESH    <= '1';
+                PRECHARGE <= '0';
+                LOAD_MODE <= '0';
+                ci_init_req <= '0';
+             elsif (init_timer = (CI_INIT_PER + 200)) then   --
+                REFRESH    <= '0';
+                PRECHARGE <= '0';
+                LOAD_MODE <= '1';
+                ci_init_req <= '0';   
+             else
+                REFRESH    <= '0';
+                PRECHARGE <= '0';
+                LOAD_MODE <= '0';
+                ci_init_req <= '0';   
+             end if;
+          end if;
+       end if;
+    end if;
+
+    end process;
+
+    end Behavioral;
+    --###############################################################################--
+    library IEEE;
+    use IEEE.STD_LOGIC_1164.ALL;
+    use IEEE.STD_LOGIC_ARITH.ALL;
+    use IEEE.STD_LOGIC_UNSIGNED.ALL;
+    use work.sdram_package.ALL;
+
+    entity command is
+       port(CLK          :  in std_logic;
+            RESET_N       :  in std_logic;   
+            SADDR          :  in std_logic_vector(ADDR_SIZE - 1 downto 0);
+            READA         :  in std_logic;
+            WRITEA       :  in std_logic;
+            REFRESH      :  in std_logic;
+            LOAD_MODE      :  in std_logic;
+            PALL         :  in std_logic;
+            PRECHARGE      :  in std_logic;
+            REF_REQ      :  in std_logic;
+            INIT_REQ      :  in std_logic;
+            PM_STOP      :  in std_logic;
+            REF_ACK      : out std_logic;
+            CM_ACK      : out std_logic;
+            OE         : out std_logic;
+            SA         : out std_logic_vector(11 downto 0);
+            BA         : out std_logic_vector( 1 downto 0);
+            CS_N         : out std_logic;
+            CKE         : out std_logic;
+            RAS_N         : out std_logic;    --negative RAS
+            CAS_N         : out std_logic;    --negative CAS
+            WE_N         : out std_logic      --negative WE
+            );
+    end command;
+
+    architecture Behavioral of command is
+
+    signal do_reada         : std_logic;
+    signal do_writea      : std_logic;
+    signal do_refresh      : std_logic;
+    signal do_precharge      : std_logic;      
+    signal do_load_mode      : std_logic;
+    signal do_initial      : std_logic;
+    signal command_done      : std_logic;
+    signal command_delay   : std_logic_vector(7 downto 0);       
+    signal rw_shift         : std_logic_vector(2 downto 0);
+    signal rw_flag         : std_logic;
+    signal do_rw         : std_logic;
+    signal oe_shift         : std_logic_vector(7 downto 0);
+    signal oe1            : std_logic;
+    signal oe2            : std_logic;
+    signal oe3            : std_logic;
+    signal rp_shift         : std_logic_vector(3 downto 0);
+    signal rp_done         : std_logic;
+    signal ex_read         : std_logic;
+    signal ex_write         : std_logic;
+    signal SDR_BL            : std_logic_vector(2 downto 0);
+    signal rowaddr         : std_logic_vector(ROWSIZE - 1 downto 0);
+    signal coladdr         : std_logic_vector(COLSIZE - 1 downto 0);
+    signal bankaddr        : std_logic_vector(BANKSIZE - 1 downto 0);
+
+    signal page_count      : integer:=0;
+
+    constant SDR_BT        : std_logic_vector(1 downto 0):= CONV_STD_LOGIC_VECTOR(SC_BT,2);   
+    constant SDR_CL        : std_logic_vector(2 downto 0):= CONV_STD_LOGIC_VECTOR(SC_CL,3); 
+    constant con_SC_PM       : std_logic:='0';  -- 1=all Banks Precharge / 0= Bank selected by BA0,BA1
+
+    begin
+
+    rowaddr <= SADDR(ROWSTART + ROWSIZE - 1 downto ROWSTART);
+    coladdr <= SADDR(COLSTART + COLSIZE - 1 downto COLSTART);
+    bankaddr <= SADDR(BANKSTART + BANKSIZE - 1 downto BANKSTART);
+
+    process(clk,reset_n)
+
+    begin
+
+    case (SC_BL) is
+       when 1 =>      -- BL = 1
+          SDR_BL <= "000";
+       when 2 =>      -- BL = 2
+          SDR_BL <= "001";
+       when 4 =>      -- BL = 4
+          SDR_BL <= "010";
+       when 8 =>      -- BL = 8
+          SDR_BL <= "011";
+       when others =>   -- Full Page
+          SDR_BL <= "111";
+    end case;
+
+    if (reset_n = '0') then
+       do_reada         <= '0';
+       do_writea        <= '0';
+       do_refresh       <= '0';
+       do_precharge     <= '0';
+       do_load_mode     <= '0';
+       do_initial        <= '0';
+       command_done     <= '0';
+       command_delay    <= (others => '0');
+       rw_flag          <= '0';
+       rp_shift         <= (others => '0');
+       rp_done          <= '0';
+       ex_read           <= '0';
+       ex_write      <= '0';
+    elsif (clk'event and clk = '1') then
+       if (INIT_REQ = '1') then
+          do_reada         <= '0';
+          do_writea        <= '0';
+          do_refresh       <= '0';
+          do_precharge     <= '0';
+          do_load_mode     <= '0';
+          do_initial        <= '1';
+          command_done     <= '0';
+          command_delay    <= (others => '0');
+          rw_flag          <= '0';
+          rp_shift         <= (others => '0');
+          rp_done          <= '0';
+          ex_read           <= '0';
+          ex_write      <= '0';
+       else
+          do_initial <= '0';
+          if ((REF_REQ = '1' or REFRESH = '1') and command_done = '0' and do_refresh = '0' and
+               rp_done = '0' and do_reada = '0' and do_writea = '0') then
+               do_refresh <= '1';
+          else
+             do_refresh <= '0';
+             if (READA = '1' and command_done = '0' and do_reada = '0' and rp_done = '0' and
+                 REF_REQ = '0') then
+                 do_reada <= '1';
+                 ex_read <= '1';
+             else
+                do_reada <= '0';
+             end if;
+             if (WRITEA = '1' and command_done = '0' and do_writea = '0' and
+                 rp_done = '0' and REF_REQ = '0') then
+                 do_writea <= '1';
+                 ex_write <= '1';
+             else
+                do_writea <= '0';
+             end if;
+             if (PRECHARGE = '1' and command_done = '0' and do_precharge = '0') then
+                do_precharge <= '1';
+             else
+                do_precharge <= '0';
+             end if;
+             if (LOAD_MODE = '1' and command_done = '0' and do_load_mode = '0') then
+                do_load_mode <= '1';
+             else
+                do_load_mode <= '0';
+             end if;
+             if (do_refresh = '1' or do_reada = '1' or do_writea = '1' or do_precharge = '1' or
+                 do_load_mode = '1') then
+                 command_delay <= X"FF";
+                 command_done  <= '1';
+                 rw_flag <= do_reada;
+             else
+                command_done  <= command_delay(0); 
+                      command_delay <= '0' & command_delay(7 downto 1);
+             end if;
+             if (command_delay(0) = '0' and command_done = '1') then
+                rp_shift <= X"F";
+                rp_done <= '1';
+             else
+                if (SC_PM = 0) then
+                   rp_done <= rp_shift(0);
+                   rp_shift <= '0' & rp_shift(3 downto 1);
+                else
+                   if (ex_read = '0' and ex_write = '0') then
+                      rp_done   <= rp_shift(0);
+                      rp_shift   <= '0' & rp_shift(3 downto 1);
+                   else
+                      if (PM_STOP = '1') then
+                         rp_done  <= rp_shift(0);
+                         rp_shift   <= '0' & rp_shift(3 downto 1);
+                         ex_read   <= '0';
+                         ex_write   <= '0';
+                      end if;
+                   end if;
+                end if;   
+             end if;
+          end if;
+       end if;
+    end if;
+
+    end process;
+
+    process(clk,reset_n)
+
+    begin
+
+    if (reset_n = '0') then
+       oe_shift <= (others => '0');
+       oe1      <= '0';
+       oe2      <= '0';
+       oe3      <= '0';
+       OE       <= '0';
+       page_count <= 0;
+    elsif (clk'event and clk = '1') then
+       if (SC_PM = 0) then
+          if (do_writea = '1') then
+             if (SC_BL = 1) then
+                oe_shift <= "00000001";
+             elsif (SC_BL = 2) then
+                oe_shift <= "00000011";
+             elsif (SC_BL = 4) then
+                oe_shift <= "00001111";
+             elsif (SC_BL = 8) then
+                oe_shift <= "11111111";
+             elsif (SC_BL = 512)then
+                page_count <= 0;
+                oe_shift <= "11111111";
+             end if;
+          else
+             if (SC_BL = 256 and  SC_BT = 0) then
+                if (page_count = 255 + SC_RCD) then 
+                   OE <= '0';
+                else
+                   page_count <= page_count + 1;
+                   if (SC_RCD = 2 and page_count >= 0) then
+                      OE <= '1';
+                   elsif (SC_RCD = 3 and page_count >= 1) then
+                      OE <= '1';
+                   else
+                      OE <= '0';
+                   end if;   
+                end if;
+             else
+                oe_shift <= '0' & oe_shift(7 downto 1);
+                oe1  <= oe_shift(0);
+                oe2  <= oe1;
+                oe3  <= oe2;
+                if (SC_RCD = 2) then
+                   OE <= oe_shift(0);
+                elsif (SC_RCD = 3) then
+                   OE <= oe1;
+                else
+                   OE <= oe_shift(0);
+                end if;
+             end if;
+          end if;
+       else
+          if (do_writea = '1') then
+             oe_shift <= "00000001";
+          else
+             oe_shift <= '0' & oe_shift(7 downto 1);
+             oe1  <= oe_shift(0);
+             oe2  <= oe1;
+             oe3  <= oe2;
+             if (SC_RCD = 2) then
+                OE <= oe1;
+             elsif (SC_RCD = 3) then
+                OE <= oe2;
+             else
+                OE <= oe_shift(0);
+             end if;
+          end if;      
+       end if;
+    end if;
+
+    end process;
+
+    process(clk,reset_n)
+
+    begin
+
+    if (reset_n = '0') then
+       rw_shift <= "000";
+       do_rw    <= '0';
+    elsif (clk'event and clk = '1') then
+       if (do_reada = '1' or do_writea = '1') then
+          if (SC_RCD = 1) then
+             do_rw <= '1';
+          elsif (SC_RCD = 2) then
+             rw_shift <= "001";
+          elsif (SC_RCD = 3) then
+             rw_shift <= "010";
+          else
+             rw_shift <= "100";
+          end if;
+       else
+          rw_shift <= '0' & rw_shift(2 downto 1);
+          do_rw    <= rw_shift(0);
+       end if;
+    end if;
+
+    end process;
+
+    process(clk,reset_n)
+
+    begin
+
+    if (reset_n = '0') then
+       CM_ACK  <= '0';
+       REF_ACK <= '0';
+    elsif (clk'event and clk = '1') then
+       if (do_refresh = '1' and REF_REQ = '1') then
+          REF_ACK <= '1';
+       elsif (do_refresh = '1' or do_reada = '1' or do_writea = '1' or --do_read_to_read = '1' or
+              do_precharge = '1' or do_load_mode = '1') then
+          CM_ACK <= '1';
+       else
+          REF_ACK <= '0';
+          CM_ACK <= '0';
+       end if;
+    end if;
+
+    end process;
+
+    process(clk,reset_n)
+
+    begin
+
+    if (reset_n = '0') then
+       SA    <= (others => '0');
+       BA    <= (others => '0');
+       CS_N  <= '0';
+       RAS_N <= '1';
+       CAS_N <= '1';
+       WE_N  <= '1';
+       CKE   <= '0';
+       
+    elsif (clk'event and clk = '1') then
+       CKE <= '1';
+       if (do_writea = '1' or do_reada = '1') then
+          SA <= rowaddr;
+       else
+          SA(7 downto 0) <= coladdr;
+          if (SC_PM = 1) then
+             SA(9) <= '1';
+          else
+             SA(9) <= '0';
+          end if;
+       end if;
+       
+       if (do_rw = '1' or do_precharge = '1') then
+          SA(10) <= con_SC_PM;
+       end if;
+       
+       if (do_precharge = '1' or do_load_mode = '1') then
+          BA <= "00";
+       else
+          BA <= bankaddr(1 downto 0);
+       end if;
+       
+       if (do_refresh = '1' or do_precharge = '1' or do_load_mode = '1' or do_initial = '1') then
+          CS_N <= '0';
+       else
+          CS_N <= SADDR(ADDR_SIZE-1);
+       end if;
+       
+       if (do_load_mode = '1') then
+          SA <= ("000" & "00" & SDR_CL & SDR_BT(0) & SDR_BL);
+       end if;
+          
+       if (do_refresh = '1') then      --AUTO Refresh oder Self Refresh Mode
+          RAS_N <= '0';
+          CAS_N <= '0';
+          WE_N  <= '1';
+       else
+          if (do_precharge = '1' and (oe3 = '1' or rw_flag = '1')) then
+             RAS_N <= '1';
+             CAS_N <= '1';
+             WE_N  <= '0';
+          elsif (do_precharge = '1' or PALL = '1') then
+             RAS_N <= '0';
+             CAS_N <= '1';
+             WE_N  <= '0';
+          elsif (do_load_mode = '1') then      --Mode Register Set
+             RAS_N <= '0';
+             CAS_N <= '0';
+             WE_N  <= '0';
+          elsif (do_reada = '1' or do_writea = '1') then --Activate Befehl
+             RAS_N <= '0';
+             CAS_N <= '1';
+             WE_N  <= '1';
+          elsif (do_rw = '1') then --Read/Write Befehl
+             RAS_N <= '1';
+             CAS_N <= '0';
+             WE_N  <= rw_flag;
+          elsif (do_initial = '1') then
+             RAS_N <= '1';
+             CAS_N <= '1';
+             WE_N  <= '1';
+          else
+             RAS_N <= '1';
+             CAS_N <= '1';
+             WE_N  <= '1';
+          end if;
+       end if;
+    end if;
+
+    end process;
+
+    end Behavioral;
+    --###############################################################################--
+    library IEEE;
+    use IEEE.STD_LOGIC_1164.ALL;
+    use IEEE.STD_LOGIC_ARITH.ALL;
+    use IEEE.STD_LOGIC_UNSIGNED.ALL;
+    use work.sdram_package.ALL;
+
+    entity sdr_data_path is
+       port(CLK     :  in std_logic;
+            RESET_N :  in std_logic;
+            DATAIN  :  in std_logic_vector(DATA_SIZE - 1 downto 0);
+            DQOUT     : out std_logic_vector(DATA_SIZE - 1 downto 0)
+            );
+    end sdr_data_path;
+
+    architecture Behavioral of sdr_data_path is
+
+    signal DIN1 : std_logic_vector(DATA_SIZE - 1 downto 0);
+    signal DIN2 : std_logic_vector(DATA_SIZE - 1 downto 0);
+    signal DIN3 : std_logic_vector(DATA_SIZE - 1 downto 0);
+    signal DIN4 : std_logic_vector(DATA_SIZE - 1 downto 0);
+    signal DIN5 : std_logic_vector(DATA_SIZE - 1 downto 0);
+    signal DIN6 : std_logic_vector(DATA_SIZE - 1 downto 0);
+
+    begin
+
+    process(clk,reset_n)
+
+    begin
+
+    if (reset_n = '0') then
+       DIN1 <= (others => '0');
+       DIN2 <= (others => '0');
+       DIN3 <= (others => '0');
+       DIN4 <= (others => '0');
+       DIN5 <= (others => '0');
+       DIN6 <= (others => '0');
+    elsif (clk'event and clk = '0') then
+       DIN1 <=   DATAIN;
+       DIN2 <=   DIN1;
+       DIN3 <=   DIN2;
+       DIN4 <=   DIN3;
+       DIN5 <=   DIN4;
+       DIN6 <=   DIN5;
+       if (SC_RCD = 2) then
+          DQOUT <= DIN3;
+       elsif (SC_RCD = 3) then
+          DQOUT <= DIN4;
+       else
+          DQOUT <= DIN4;
+       end if;
+    end if;
+
+    end process;
+
+    end Behavioral;
+

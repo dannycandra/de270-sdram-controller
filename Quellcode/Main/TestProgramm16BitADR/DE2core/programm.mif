@@ -1,0 +1,44 @@
+Depth = 32;
+Width = 16;
+Address_radix = bin;
+Data_radix = bin;
+% Programmbefehle für Rechenwerk %
+Content
+  Begin
+00000  : 00010000 ; % Load A aus 0  %
+00001  : 00110001 ; % Load B aus 1  %
+00010  : 00000110 ; % Z=A+B         %
+00011  : 00110010 ; % Load B aus 2  %
+00100  : 00001110 ; % Z=Z+B         %
+00101  : 00110011 ; % Load B aus 3  %
+00110  : 00001110 ; % Z=Z+B         %
+00111  : 00110100 ; % Load B aus 4  %
+
+01000  : 00001110 ; % Z=Z+B         %
+01001  : 01011000 ; % Store Z in 8  %
+01010  : 10000000 ; % STOP          %   
+01011  : 00000000 ; 
+01100  : 00000000 ; 
+01101  : 00000000 ; 
+01110  : 00000000 ; 
+01111  : 00000000 ; 
+
+10000  : 00000000 ; % nicht genutzt %
+10001  : 00000000 ; % nicht genutzt %
+10010  : 00000000 ; % nicht genutzt %
+10011  : 00000000 ; % nicht genutzt %
+10100  : 00000000 ; % nicht genutzt %
+10101  : 00000000 ; % nicht genutzt %
+10110  : 00000000 ; % nicht genutzt %
+10111  : 00000000 ; % nicht genutzt %
+
+11000  : 00000000 ; % nicht genutzt %
+11001  : 00000000 ; % nicht genutzt %
+11010  : 00000000 ; % nicht genutzt %
+11011  : 00000000 ; % nicht genutzt %
+11100  : 00000000 ; % nicht genutzt %
+11101  : 00000000 ; % nicht genutzt %
+11110  : 00000000 ; % nicht genutzt %
+11111  : 00000000 ; % nicht genutzt %
+
+end;

@@ -1,0 +1,47 @@
+
+State Machine - |TestSDRAM0|AKTUALZUSTAND
+Name AKTUALZUSTAND.TEST_READ_STATE AKTUALZUSTAND.TEST_WRITE_STATE AKTUALZUSTAND.TEST_IDLE_STATE AKTUALZUSTAND.TEST_WAIT_INIT 
+AKTUALZUSTAND.TEST_WAIT_INIT 0 0 0 0 
+AKTUALZUSTAND.TEST_IDLE_STATE 0 0 1 1 
+AKTUALZUSTAND.TEST_WRITE_STATE 0 1 0 1 
+AKTUALZUSTAND.TEST_READ_STATE 1 0 0 1 
+
+State Machine - |TestSDRAM0|LCD_Line:LCDDE2|next_command
+Name next_command.DISPLAY_CLEAR next_command.DISPLAY_OFF next_command.RESET3 next_command.HOLD next_command.RESET1 next_command.DROP_LCD_E next_command.RETURN_HOME next_command.LINE2 next_command.Print_String next_command.MODE_SET next_command.DISPLAY_ON next_command.FUNC_SET next_command.RESET2 
+next_command.RESET2 0 0 0 0 0 0 0 0 0 0 0 0 0 
+next_command.FUNC_SET 0 0 0 0 0 0 0 0 0 0 0 1 1 
+next_command.DISPLAY_ON 0 0 0 0 0 0 0 0 0 0 1 0 1 
+next_command.MODE_SET 0 0 0 0 0 0 0 0 0 1 0 0 1 
+next_command.Print_String 0 0 0 0 0 0 0 0 1 0 0 0 1 
+next_command.LINE2 0 0 0 0 0 0 0 1 0 0 0 0 1 
+next_command.RETURN_HOME 0 0 0 0 0 0 1 0 0 0 0 0 1 
+next_command.DROP_LCD_E 0 0 0 0 0 1 0 0 0 0 0 0 1 
+next_command.RESET1 0 0 0 0 1 0 0 0 0 0 0 0 1 
+next_command.HOLD 0 0 0 1 0 0 0 0 0 0 0 0 1 
+next_command.RESET3 0 0 1 0 0 0 0 0 0 0 0 0 1 
+next_command.DISPLAY_OFF 0 1 0 0 0 0 0 0 0 0 0 0 1 
+next_command.DISPLAY_CLEAR 1 0 0 0 0 0 0 0 0 0 0 0 1 
+
+State Machine - |TestSDRAM0|LCD_Line:LCDDE2|state
+Name state.DISPLAY_CLEAR state.DISPLAY_OFF state.RESET3 state.RESET2 state.HOLD state.DROP_LCD_E state.RETURN_HOME state.LINE2 state.Print_String state.MODE_SET state.DISPLAY_ON state.FUNC_SET state.RESET1 
+state.RESET1 0 0 0 0 0 0 0 0 0 0 0 0 0 
+state.FUNC_SET 0 0 0 0 0 0 0 0 0 0 0 1 1 
+state.DISPLAY_ON 0 0 0 0 0 0 0 0 0 0 1 0 1 
+state.MODE_SET 0 0 0 0 0 0 0 0 0 1 0 0 1 
+state.Print_String 0 0 0 0 0 0 0 0 1 0 0 0 1 
+state.LINE2 0 0 0 0 0 0 0 1 0 0 0 0 1 
+state.RETURN_HOME 0 0 0 0 0 0 1 0 0 0 0 0 1 
+state.DROP_LCD_E 0 0 0 0 0 1 0 0 0 0 0 0 1 
+state.HOLD 0 0 0 0 1 0 0 0 0 0 0 0 1 
+state.RESET2 0 0 0 1 0 0 0 0 0 0 0 0 1 
+state.RESET3 0 0 1 0 0 0 0 0 0 0 0 0 1 
+state.DISPLAY_OFF 0 1 0 0 0 0 0 0 0 0 0 0 1 
+state.DISPLAY_CLEAR 1 0 0 0 0 0 0 0 0 0 0 0 1 
+
+State Machine - |TestSDRAM0|sdram0_ctrl:SDRAM0_CONTROLLER|AKTUALZUSTAND
+Name AKTUALZUSTAND.REF_STATE AKTUALZUSTAND.READ_STATE AKTUALZUSTAND.WRITE_STATE AKTUALZUSTAND.IDLE_STATE AKTUALZUSTAND.INIT_STATE 
+AKTUALZUSTAND.INIT_STATE 0 0 0 0 0 
+AKTUALZUSTAND.IDLE_STATE 0 0 0 1 1 
+AKTUALZUSTAND.WRITE_STATE 0 0 1 0 1 
+AKTUALZUSTAND.READ_STATE 0 1 0 0 1 
+AKTUALZUSTAND.REF_STATE 1 0 0 0 1 

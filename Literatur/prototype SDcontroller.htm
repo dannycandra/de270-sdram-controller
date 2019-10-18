@@ -1,0 +1,421 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+
+
+        <title>OpenCores</title>
+    <link rel="stylesheet" type="text/css" href="prototype%20SDcontroller_files/css.css">
+    <link rel="stylesheet" type="text/css" href="prototype%20SDcontroller_files/user.css">
+    <link rel="icon" type="image/png" href="http://www.opencores.com/themes/new/img/favicon.png">
+    <link rel="shortcut icon" type="image/png" href="http://www.opencores.com/themes/new/img/favicon.png">
+    
+    <link type="text/css" href="prototype%20SDcontroller_files/styles.css" rel="stylesheet" media="screen">
+    <link type="text/css" href="prototype%20SDcontroller_files/star-light.css" rel="stylesheet" media="screen">
+    <!--[if gte IE 5.5000]>
+    <style type="text/css" media="screen">
+        tbody tr td { padding:1px 0 }
+        #wrap h2 { padding:10px 5px 0 5px; margin-bottom:-8px }
+    </style>
+    <![endif]-->
+    <script type="text/javascript">
+        function getPath(){
+            return './websvn';
+        }
+        
+        function checkCB(chBox) {
+            count = 0
+            first = null
+            f = chBox.form
+            for(i = 0 ; i < f.elements.length ; i++)
+            if(f.elements[i].type == 'checkbox' && f.elements[i].checked) {
+                if(first == null && f.elements[i] != chBox) {
+                    first = f.elements[i]
+                }
+                count += 1
+            }
+            
+            if (count > 2) {
+               first.checked = false
+               count -= 1
+            }
+        }
+    </script>
+    <script type="text/javascript" src="prototype%20SDcontroller_files/collapse.js"></script><style type="text/css">.switchcontent{display:none;}</style>
+        <meta http-equiv="Content-type" value="text/html; charset=utf-8">
+    <meta name="keywords" content="cores, VHDL, Verilog HDL, ASIC, Synthesizable, standard cell, IP, Intellectual Property, 32-bit RISC, UART, PCI, SDRAM, full custom, system on a chip, SOC, reusable, design, development, synthesis, designs, developers, C, Linux, eCos, open, free, open source cores, RTL code, system-on-a-chip, circuits, digital, GNU, GPL, core, controller, processor, system design, chip design, EDA, design methodology, design tools, ASICs, programmable logic, FPGA's, PLDs, CPLDs, verification, Synthesis, HDL, Simulation, IC design software, semiconductor design, integrated circuits, system designs, chip designs, EDAs,  design methodologies, design tool, ASIC, programmable logics, FPGA, PLD, CPLD, Synthesis,  circuit, Synopsys, system design, chip design, programmable logic, FPGA's, PLDs,  CPLDs, verification, Simulation">
+        <script type="text/javascript" src="prototype%20SDcontroller_files/all.php"></script>
+    <script type="text/javascript">
+        google_ad_client = "pub-0097483751598630";
+        google_ad_slot = "5038113202";
+        google_ad_width = 728;
+        google_ad_height = 90;
+    </script>
+    <!--[if IE]>
+    
+    <style type="text/css">
+        html body .article {
+            width: 38%;
+        }
+        .meny li:first-child {
+            width: 108px;
+            list-style-image: url(img/meny1_ie.gif);
+        }
+    </style>
+    
+    <![endif]-->
+    <!--[if lt IE 7.]>
+    <script defer="defer" type="text/javascript" src="/js/pngfix.js"></script>
+    <script  type="text/javascript" src="/js/ie6.js"></script>
+    <link rel="stylesheet" type="text/css" href="themes/new/ie6.css" />
+    <![endif]-->
+    
+</head><body id="main">
+<div class="shad_right">
+<div class="shad_left">
+<div class="div_main">
+    <div id="login" style="display: none;"></div>
+    <div class="div_top">
+        <a href="http://www.opencores.com/">
+	    <img src="prototype%20SDcontroller_files/imgpadOpenCores.png" alt="" title="">
+	</a>
+    </div>
+    <div class="div_middle" id="dm">
+        <div class="div_middle_left" id="dml">
+	    <div class="div_middle_left_top"></div>
+	    <div class="div_middle_left_mid">
+		
+<div class="menu login">
+    <div class="top">
+                Username:
+            </div>
+    <div class="mid">
+                <form action="login" method="post">
+	    <input name="redirect" value="websvn,filedetails" type="hidden">
+            <input class="design ie6_input" name="user" type="text">
+            <br>
+            Password:
+            <br>
+            <input class="design ie6_input" name="pass" type="password">
+            <br>
+            <input class="design" name="remember" type="checkbox">Remember me
+            <br>
+            <input class="design" value="Login" type="submit">
+        </form>
+        <form action="register" method="post">
+            <input class="design" value="Register" type="submit">
+        </form>
+            </div>
+</div>
+
+<div class="menu browse">
+    <div class="top"></div>
+    <div class="mid">
+        <ul>
+            <li><a href="http://www.opencores.com/projects">Projects</a></li>
+            <li><a href="http://www.opencores.com/forum">Forums</a></li>
+            <li><a href="http://www.opencores.com/about" onclick="return !toggle(this);">About</a>
+		<ul style="display: none;">
+		    <li><a href="http://www.opencores.com/opencores,mission">Mission</a></li>
+		    <li><a href="http://www.opencores.com/opencores,logos">Logos</a></li>
+		    <li><a href="http://www.opencores.com/opencores,contact">Contact us</a></li>
+		    <li><a href="http://www.opencores.com/opencores,advertise">Advertise</a></li>
+		</ul>
+	    </li>
+            <li><a href="http://www.opencores.com/howto" onclick="return !toggle(this);">HowTo/FAQ</a>
+		<ul style="display: none;">
+		    <li><a href="http://www.opencores.com/opencores,faq">Site</a></li>
+		    <li><a href="http://www.opencores.com/opencores,faq_pe">Project</a></li>
+		    <li><a href="http://www.opencores.com/opencores,wishbone">Wishbone</a></li>
+		    <li><a href="http://www.opencores.com/opencores,svn">SVN</a></li>
+		    <li><a href="http://www.opencores.com/opencores,tools">EDA Tools</a></li>
+		</ul>
+	    </li>
+	    <li><a href="http://www.opencores.com/misc" onclick="return !toggle(this);">Misc</a>
+		<ul style="display: none;">
+		    <li><a href="http://www.opencores.com/news">News</a></li>
+		    <li><a href="http://www.opencores.com/articles">Articles</a></li>
+		    <li><a href="http://www.opencores.com/numbers">Statistics</a></li>
+		    <li><a href="http://www.opencores.com/newsletters">Newsletters</a></li>
+		    <li><a href="http://www.opencores.com/jobs">Available jobs</a></li>
+		    <li><a href="http://opencores.tradepub.com/">Magazines</a></li>
+		</ul>
+	    </li>
+	    <li><a href="http://www.opencores.com/shop,items">Shop</a></li>
+        </ul>
+    </div>
+</div>
+
+
+<div class="pad_leftside" style="border: 0px none ;">
+    <a href="http://www.opencores.com/redirect.php?id=17" target="_blank"><img src="prototype%20SDcontroller_files/imgpad125x125DevKit.gif" alt="" title=""></a>
+</div>
+
+<div class="menu tools">
+    <div class="top"></div>
+    <div class="mid">
+	
+	<form action="http://www.google.com/cse" id="cse-search-box">
+	    <div>
+		<input name="cx" value="012935124227736198121:b6s3cwd8ada" type="hidden">
+		<input name="ie" value="UTF-8" type="hidden">
+		<input style="border: 1px solid rgb(126, 157, 185); padding: 2px; background: rgb(255, 255, 255) url(http://www.google.com/cse/intl/en/images/google_custom_search_watermark.gif) no-repeat scroll left center; -moz-background-clip: border; -moz-background-origin: padding; -moz-background-inline-policy: continuous;" name="q" size="12" type="text">
+		<input name="sa" value="Search" type="submit">
+	    </div>
+	<input value="www.opencores.com/websvn,filedetails?repname=sdram_controller&amp;path=%2Fsdram_controller%2Ftrunk%2Fscratch_isim_tb.vhd" name="siteurl" type="hidden"></form>
+	
+    </div>
+</div>
+	    </div>
+	    <div class="div_middle_left_bot"></div>
+        </div>
+        <div class="div_middle_center" id="dmc">
+	    
+<div class="banner">
+    
+    <div style="float: left; margin-left: 100px;">
+	<a href="http://www.opencores.com/redirect.php?id=86" target="_blank"><img src="prototype%20SDcontroller_files/imgpad468x60OC_ad_banner_468x60_v090826.gif" alt="" title=""></a>
+    </div>
+    
+    <div style="float: left; margin-left: 100px;">
+	<a href="http://www.opencores.com/redirect.php?id=111" target="_blank"><img src="prototype%20SDcontroller_files/imgpad241x60ORSoC.gif" alt="" title=""></a>
+    </div>
+    
+</div>
+            <button onclick="location.href='project,sdram_controller'">Back to project</button><div id="websvn">
+<div id="select"><form action="websvn,form?path=&amp;" method="post" id="projectform"><div><input name="selectproj" value="1" type="hidden"><input name="op" value="form" type="hidden"><select name="repname" onchange="javascript:this.form.submit();"><option value="100128">100128</option><option value="100baset">100baset</option><option value="10_100m_ethernet-fifo_convertor">10_100m_ethernet-fifo_convertor</option><option value="128bit_aes">128bit_aes</option><option value="1664">1664</option><option value="2dcoprocessor">2dcoprocessor</option><option value="32bitcpu1">32bitcpu1</option><option value="395_vgs">395_vgs</option><option value="3des_vhdl">3des_vhdl</option><option value="4bitprocesor">4bitprocesor</option><option value="6502_verilog_design">6502_verilog_design</option><option value="6502vhdl">6502vhdl</option><option value="68hc05">68hc05</option><option value="68hc08">68hc08</option><option value="8051">8051</option><option value="8051_to_ahb_interface">8051_to_ahb_interface</option><option value="82c54_core">82c54_core</option><option value="8b10b_encdec">8b10b_encdec</option><option value="a5cipher">a5cipher</option><option value="a_vhd_16550_uart">a_vhd_16550_uart</option><option value="a_vhdl_8253_timer">a_vhdl_8253_timer</option><option value="a_vhdl_can_controller">a_vhdl_can_controller</option><option value="aacencode">aacencode</option><option value="ac97">ac97</option><option value="acxbrd">acxbrd</option><option value="adaptive_lms_equalizer">adaptive_lms_equalizer</option><option value="adaptivefilter">adaptivefilter</option><option value="adaptiveprocessor">adaptiveprocessor</option><option value="adat_optical_feed_forward_receiver">adat_optical_feed_forward_receiver</option><option value="adder">adder</option><option value="adv_debug_sys">adv_debug_sys</option><option value="ae18">ae18</option><option value="ae68">ae68</option><option value="aemb">aemb</option><option value="aes">aes</option><option value="aes128">aes128</option><option value="aes3rx">aes3rx</option><option value="aes_128_192_256">aes_128_192_256</option><option value="aes_core">aes_core</option><option value="aes_crypto_core">aes_crypto_core</option><option value="aes_fekete256">aes_fekete256</option><option value="aes_highthroughput_lowarea">aes_highthroughput_lowarea</option><option value="aes_pipe">aes_pipe</option><option value="ahb2wishbone">ahb2wishbone</option><option value="ahb_arbiter">ahb_arbiter</option><option value="ahb_system_generator">ahb_system_generator</option><option value="all_digital_fm_receiver">all_digital_fm_receiver</option><option value="alternascope">alternascope</option><option value="alu_with_selectable_inputs_and_outputs">alu_with_selectable_inputs_and_outputs</option><option value="alwcpu">alwcpu</option><option value="amba_compliant_fifo_core">amba_compliant_fifo_core</option><option value="another_simple_uart">another_simple_uart</option><option value="ao68000">ao68000</option><option value="Aquarius">Aquarius</option><option value="arbgen">arbgen</option><option value="artec_dongle_ii_fpga">artec_dongle_ii_fpga</option><option value="aspida">aspida</option><option value="asynchronous_clocks">asynchronous_clocks</option><option value="ata">ata</option><option value="audio">audio</option><option value="audiocompressionlosslessfpga">audiocompressionlosslessfpga</option><option value="auto_baud">auto_baud</option><option value="avr_core">avr_core</option><option value="avrtinyx61core">avrtinyx61core</option><option value="avs_aes">avs_aes</option><option value="avuc">avuc</option><option value="ax8">ax8</option><option value="BasicDES">BasicDES</option><option value="BasicRSA">BasicRSA</option><option value="basilisk-platform">basilisk-platform</option><option value="baud_select_uart">baud_select_uart</option><option value="baudgen">baudgen</option><option value="bc6502">bc6502</option><option value="big_counter">big_counter</option><option value="binary_to_bcd">binary_to_bcd</option><option value="bips">bips</option><option value="biquad">biquad</option><option value="blue">blue</option><option value="bluespec-80211atransmitter">bluespec-80211atransmitter</option><option value="bluespec-bsp">bluespec-bsp</option><option value="bluespec-convolutional-codec">bluespec-convolutional-codec</option><option value="bluespec-fft">bluespec-fft</option><option value="bluespec-galoisfield">bluespec-galoisfield</option><option value="bluespec-h264">bluespec-h264</option><option value="bluespec-ofdm">bluespec-ofdm</option><option value="bluespec-reedsolomon">bluespec-reedsolomon</option><option value="bluespec_md6">bluespec_md6</option><option value="bluetooth">bluetooth</option><option value="board">board</option><option value="boundaries">boundaries</option><option value="bpsk_spread_spectrum_modulator_demodulator">bpsk_spread_spectrum_modulator_demodulator</option><option value="brisc">brisc</option><option value="bu_pacman">bu_pacman</option><option value="butterfly">butterfly</option><option value="butterflylight">butterflylight</option><option value="c-nit_soc">c-nit_soc</option><option value="c0or1k">c0or1k</option><option value="c16">c16</option><option value="c8051">c8051</option><option value="ca_prng">ca_prng</option><option value="cachecontroller">cachecontroller</option><option value="cachemodel">cachemodel</option><option value="camellia">camellia</option><option value="camellia-vhdl">camellia-vhdl</option><option value="can">can</option><option value="cas">cas</option><option value="ccir656_vidcapif">ccir656_vidcapif</option><option value="cdma">cdma</option><option value="cereon">cereon</option><option value="cf_cordic">cf_cordic</option><option value="cf_fft">cf_fft</option><option value="cf_fir">cf_fir</option><option value="cf_fp_mul">cf_fp_mul</option><option value="cf_interleaver">cf_interleaver</option><option value="cf_ldpc">cf_ldpc</option><option value="cf_rca">cf_rca</option><option value="cf_ssp">cf_ssp</option><option value="cfft">cfft</option><option value="cia">cia</option><option value="cicfilter">cicfilter</option><option value="cinematronics">cinematronics</option><option value="claw">claw</option><option value="cmpct">cmpct</option><option value="color_converter">color_converter</option><option value="common">common</option><option value="complexarithmetic">complexarithmetic</option><option value="const_encoder">const_encoder</option><option value="constellation_vga">constellation_vga</option><option value="cop">cop</option><option value="cordic">cordic</option><option value="cordic_engine">cordic_engine</option><option value="core_arm">core_arm</option><option value="cortexi">cortexi</option><option value="cowgirl">cowgirl</option><option value="cpu6502_true_cycle">cpu6502_true_cycle</option><option value="cpu65c02_true_cycle">cpu65c02_true_cycle</option><option value="cpu68k">cpu68k</option><option value="cpu8080">cpu8080</option><option value="cpu_core_8_bit">cpu_core_8_bit</option><option value="cpu_lecture">cpu_lecture</option><option value="cpugen">cpugen</option><option value="cryptography">cryptography</option><option value="cryptopan_core">cryptopan_core</option><option value="cryptosorter">cryptosorter</option><option value="csa">csa</option><option value="dab_receivers">dab_receivers</option><option value="dallas_one-wire">dallas_one-wire</option><option value="dbg_interface">dbg_interface</option><option value="dc97">dc97</option><option value="dct">dct</option><option value="dct_idct">dct_idct</option><option value="ddr2_contr">ddr2_contr</option><option value="ddr_sdr">ddr_sdr</option><option value="dds_ip_debuged">dds_ip_debuged</option><option value="dds_synthesizer">dds_synthesizer</option><option value="ddsgen">ddsgen</option><option value="de1_olpcl2294_system">de1_olpcl2294_system</option><option value="decoder">decoder</option><option value="deflatecore">deflatecore</option><option value="des">des</option><option value="design_and_implementation_of_jpeg2000_encoder_using_vhdl">design_and_implementation_of_jpeg2000_encoder_using_vhdl</option><option value="design_dsp320tmsc10_with_vhdl">design_dsp320tmsc10_with_vhdl</option><option value="dfp">dfp</option><option value="digifilter">digifilter</option><option value="digitaloscilloscope">digitaloscilloscope</option><option value="diogenes">diogenes</option><option value="dirac">dirac</option><option value="distributed_intelligence">distributed_intelligence</option><option value="divider">divider</option><option value="djpeg">djpeg</option><option value="dlp_controller">dlp_controller</option><option value="dmacontroller">dmacontroller</option><option value="dmt_tx">dmt_tx</option><option value="double_fpu">double_fpu</option><option value="dpll_rwf">dpll_rwf</option><option value="dram">dram</option><option value="driver">driver</option><option value="ds1621">ds1621</option><option value="dspexplorer">dspexplorer</option><option value="dualspartainc6713cpci">dualspartainc6713cpci</option><option value="dvb_s2_ldpc_decoder">dvb_s2_ldpc_decoder</option><option value="dwt2d">dwt2d</option><option value="e123mux">e123mux</option><option value="e1framer">e1framer</option><option value="e1framerdeframer">e1framerdeframer</option><option value="ecpu">ecpu</option><option value="ecpu_alu">ecpu_alu</option><option value="edatools">edatools</option><option value="elliptic_curve_arithmetic">elliptic_curve_arithmetic</option><option value="elm">elm</option><option value="elphel_353">elphel_353</option><option value="embed_z8">embed_z8</option><option value="embedded_risc">embedded_risc</option><option value="encore">encore</option><option value="ep2c35_board">ep2c35_board</option><option value="epc_rfid_transponder">epc_rfid_transponder</option><option value="epp">epp</option><option value="epp-to-wishbone">epp-to-wishbone</option><option value="erp">erp</option><option value="ethdev">ethdev</option><option value="ethernet_tri_mode">ethernet_tri_mode</option><option value="ethmac">ethmac</option><option value="ethmac10g">ethmac10g</option><option value="ethswitch">ethswitch</option><option value="eus100lx">eus100lx</option><option value="eusfs">eusfs</option><option value="eventcpu">eventcpu</option><option value="evision">evision</option><option value="extension_pack">extension_pack</option><option value="fab1">fab1</option><option value="fac2222m">fac2222m</option><option value="fast-crc">fast-crc</option><option value="fast_log">fast_log</option><option value="fbas_encoder">fbas_encoder</option><option value="fcpu">fcpu</option><option value="ffr16">ffr16</option><option value="fft_32">fft_32</option><option value="fft_fir_filter">fft_fir_filter</option><option value="fftprocessor">fftprocessor</option><option value="fht">fht</option><option value="fifo_srl_uni">fifo_srl_uni</option><option value="fifouart">fifouart</option><option value="filter">filter</option><option value="fir-gen">fir-gen</option><option value="fir_filter_generator">fir_filter_generator</option><option value="firewire">firewire</option><option value="firgen">firgen</option><option value="flha">flha</option><option value="floating_point_adder_subtractor">floating_point_adder_subtractor</option><option value="floppyif">floppyif</option><option value="fmtransmitter">fmtransmitter</option><option value="fp_log">fp_log</option><option value="fpga">fpga</option><option value="fpgabsp">fpgabsp</option><option value="fpgaconfig">fpgaconfig</option><option value="fpu">fpu</option><option value="fpu100">fpu100</option><option value="fpu32bit">fpu32bit</option><option value="fpu_double">fpu_double</option><option value="fpuvhdl">fpuvhdl</option><option value="freenode">freenode</option><option value="freq_div">freq_div</option><option value="froop">froop</option><option value="fsl2serial">fsl2serial</option><option value="functiongenerator">functiongenerator</option><option value="gamepads">gamepads</option><option value="gcpu">gcpu</option><option value="gecko3">gecko3</option><option value="generic_fifos">generic_fifos</option><option value="gh_vhdl_library">gh_vhdl_library</option><option value="gig_ethernet_mac_core">gig_ethernet_mac_core</option><option value="gix96">gix96</option><option value="gmii_switch">gmii_switch</option><option value="gpio">gpio</option><option value="grain">grain</option><option value="graphicallcd">graphicallcd</option><option value="graphiti">graphiti</option><option value="groundhog2009_repository">groundhog2009_repository</option><option value="gsc">gsc</option><option value="gup">gup</option><option value="hamming">hamming</option><option value="hamming_decoder_and_encoder">hamming_decoder_and_encoder</option><option value="hamming_gen">hamming_gen</option><option value="hangyu">hangyu</option><option value="hasm">hasm</option><option value="hcsa_adder">hcsa_adder</option><option value="hdb3">hdb3</option><option value="hdbn">hdbn</option><option value="hdlc">hdlc</option><option value="help">help</option><option value="hicovec">hicovec</option><option value="hierarch_unit">hierarch_unit</option><option value="hilbert_transformer">hilbert_transformer</option><option value="hmta">hmta</option><option value="hpc-16">hpc-16</option><option value="hpcmemory">hpcmemory</option><option value="hpdmc">hpdmc</option><option value="hssdrc">hssdrc</option><option value="ht_tunnel">ht_tunnel</option><option value="huffmandecoder">huffmandecoder</option><option value="hwlu">hwlu</option><option value="i2">i2</option><option value="i2c">i2c</option><option value="i2c_master_slave">i2c_master_slave</option><option value="i2c_master_slave_core">i2c_master_slave_core</option><option value="i2c_slave">i2c_slave</option><option value="i2c_to_wb">i2c_to_wb</option><option value="i2c_vhdl">i2c_vhdl</option><option value="i2c_wb_wrapper">i2c_wb_wrapper</option><option value="i2cgpio">i2cgpio</option><option value="i2clcd">i2clcd</option><option value="i2clog">i2clog</option><option value="i2cslave">i2cslave</option><option value="i2s">i2s</option><option value="i2s_audio_gen">i2s_audio_gen</option><option value="i2s_interface">i2s_interface</option><option value="i2s_to_parallel">i2s_to_parallel</option><option value="i2sparalell">i2sparalell</option><option value="i8255">i8255</option><option value="ic6821">ic6821</option><option value="ice_z80">ice_z80</option><option value="icu">icu</option><option value="idea">idea</option><option value="igor">igor</option><option value="iiepci">iiepci</option><option value="ima_adpcm_encoder">ima_adpcm_encoder</option><option value="implementationofsoftwaredefinedradioonreconfigurableplatform">implementationofsoftwaredefinedradioonreconfigurableplatform</option><option value="infiniband">infiniband</option><option value="interface_vga80x40">interface_vga80x40</option><option value="ipv4_packet_transmitter">ipv4_packet_transmitter</option><option value="irda">irda</option><option value="iso7816-3">iso7816-3</option><option value="isp">isp</option><option value="jart">jart</option><option value="jop">jop</option><option value="jpeg">jpeg</option><option value="jpegcompression">jpegcompression</option><option value="jpegencode">jpegencode</option><option value="jtag">jtag</option><option value="jtag_master">jtag_master</option><option value="k68">k68</option><option value="k7_viterbi_decoder">k7_viterbi_decoder</option><option value="kad">kad</option><option value="kcpsm3_interrupt_handling">kcpsm3_interrupt_handling</option><option value="keeloq">keeloq</option><option value="keyboardcontroller">keyboardcontroller</option><option value="keypad_scanner">keypad_scanner</option><option value="kiss-board">kiss-board</option><option value="lattice_ethernet_tri_mac">lattice_ethernet_tri_mac</option><option value="lcd">lcd</option><option value="lcd1">lcd1</option><option value="lcd_controller">lcd_controller</option><option value="ldpc">ldpc</option><option value="ldpc_decoder_802_3an">ldpc_decoder_802_3an</option><option value="ldpc_encoder_802_3an">ldpc_encoder_802_3an</option><option value="lem1_9min">lem1_9min</option><option value="lfsrcountergenerator">lfsrcountergenerator</option><option value="lib_ttl">lib_ttl</option><option value="light8080">light8080</option><option value="line_codes">line_codes</option><option value="linuxvcap">linuxvcap</option><option value="log_anal">log_anal</option><option value="logos">logos</option><option value="lowpowerfir">lowpowerfir</option><option value="lp_iir_filter">lp_iir_filter</option><option value="lpc">lpc</option><option value="lpu">lpu</option><option value="lq057q3dc02">lq057q3dc02</option><option value="lwmips">lwmips</option><option value="lwrisc">lwrisc</option><option value="m1_core">m1_core</option><option value="mac">mac</option><option value="macroblock_motion_detection">macroblock_motion_detection</option><option value="madi_receiver">madi_receiver</option><option value="maf">maf</option><option value="mafa-pc-board">mafa-pc-board</option><option value="man2uart">man2uart</option><option value="manchesterencoderdecoder">manchesterencoderdecoder</option><option value="manchesterwireless">manchesterwireless</option><option value="marca">marca</option><option value="marcus_proj1">marcus_proj1</option><option value="matrix3x3">matrix3x3</option><option value="matrixdetermprocessor">matrixdetermprocessor</option><option value="maxii-evalboard">maxii-evalboard</option><option value="mb-jpeg">mb-jpeg</option><option value="mblite">mblite</option><option value="mcpu">mcpu</option><option value="mcu">mcu</option><option value="mcu8">mcu8</option><option value="md5">md5</option><option value="mdct">mdct</option><option value="mem_ctrl">mem_ctrl</option><option value="memory_cores">memory_cores</option><option value="memory_sizer">memory_sizer</option><option value="memory_stealer">memory_stealer</option><option value="memorycontroller">memorycontroller</option><option value="mfpga">mfpga</option><option value="micore">micore</option><option value="microprocessor">microprocessor</option><option value="microriscii">microriscii</option><option value="microwave_engineering_project_bit_error_rate_tester">microwave_engineering_project_bit_error_rate_tester</option><option value="milsa">milsa</option><option value="milstd1553bbusprotocol">milstd1553bbusprotocol</option><option value="mini-acex1k">mini-acex1k</option><option value="mini_aes">mini_aes</option><option value="minimips">minimips</option><option value="minirisc">minirisc</option><option value="miniuart2">miniuart2</option><option value="minsoc">minsoc</option><option value="mips16s">mips16s</option><option value="mips789">mips789</option><option value="mipscpu-pipeline">mipscpu-pipeline</option><option value="mjpeg-decoder">mjpeg-decoder</option><option value="mjpeg-decoder_new">mjpeg-decoder_new</option><option value="mkjpeg">mkjpeg</option><option value="mlite">mlite</option><option value="mmcfpgaconfig">mmcfpgaconfig</option><option value="modbus_rtu_serial">modbus_rtu_serial</option><option value="modular_oscilloscope">modular_oscilloscope</option><option value="modulo3">modulo3</option><option value="most">most</option><option value="most_core">most_core</option><option value="motion_controller">motion_controller</option><option value="motion_estimation_processor">motion_estimation_processor</option><option value="motor">motor</option><option value="mpdma">mpdma</option><option value="mpeg4_video_coding">mpeg4_video_coding</option><option value="mpegencoderdecoder">mpegencoderdecoder</option><option value="muart">muart</option><option value="multicore_viterbi_decoder_architecture">multicore_viterbi_decoder_architecture</option><option value="mvp_starter_kit">mvp_starter_kit</option><option value="ncore">ncore</option><option value="nemo_emotion">nemo_emotion</option><option value="neot">neot</option><option value="neptune-core">neptune-core</option><option value="nfctl">nfctl</option><option value="nnARM">nnARM</option><option value="noc">noc</option><option value="nocem">nocem</option><option value="noise_reduction">noise_reduction</option><option value="nonrestoringsquareroot">nonrestoringsquareroot</option><option value="nova">nova</option><option value="npigrctrl">npigrctrl</option><option value="ntsc_vid_encoder">ntsc_vid_encoder</option><option value="oab1">oab1</option><option value="oberon">oberon</option><option value="oc-h264-encoder">oc-h264-encoder</option><option value="oc54x">oc54x</option><option value="ocmips">ocmips</option><option value="ocp_wb_wrapper">ocp_wb_wrapper</option><option value="ocrp-1">ocrp-1</option><option value="ofdm">ofdm</option><option value="ofdm-baseband-receiver">ofdm-baseband-receiver</option><option value="ofdm_modulator">ofdm_modulator</option><option value="oks8">oks8</option><option value="omega">omega</option><option value="omrpv2">omrpv2</option><option value="onedimensionalmedianfilter">onedimensionalmedianfilter</option><option value="opb_i2c">opb_i2c</option><option value="opb_isa">opb_isa</option><option value="opb_onewire">opb_onewire</option><option value="opb_ps2_keyboard_controller">opb_ps2_keyboard_controller</option><option value="opb_psram_controller">opb_psram_controller</option><option value="opb_udp_transceiver">opb_udp_transceiver</option><option value="opb_usblite">opb_usblite</option><option value="opb_vga_char_display_nodac">opb_vga_char_display_nodac</option><option value="opb_wb_wrapper">opb_wb_wrapper</option><option value="open8_urisc">open8_urisc</option><option value="open_1394_intellectual_property">open_1394_intellectual_property</option><option value="open_free_list">open_free_list</option><option value="open_tcpip">open_tcpip</option><option value="openarm">openarm</option><option value="openconsole">openconsole</option><option value="opencores">opencores</option><option value="opencpu678085">opencpu678085</option><option value="openfire">openfire</option><option value="openfire2">openfire2</option><option value="openfire_core">openfire_core</option><option value="openfpu64">openfpu64</option><option value="openjtag-project">openjtag-project</option><option value="openmsp430">openmsp430</option><option value="openrisc">openrisc</option><option value="openriscdevboard">openriscdevboard</option><option value="opentech">opentech</option><option value="openverifla">openverifla</option><option value="or-1200-ft">or-1200-ft</option><option value="or1200_soc">or1200_soc</option><option value="or1200gct">or1200gct</option><option value="or1k">or1k</option><option value="or1k-cf">or1k-cf</option><option value="or1k_old">or1k_old</option><option value="or1k_soc_on_altera_embedded_dev_kit">or1k_soc_on_altera_embedded_dev_kit</option><option value="or2k">or2k</option><option value="othellogame">othellogame</option><option value="ovcodec">ovcodec</option><option value="pap">pap</option><option value="parallelcrcgen">parallelcrcgen</option><option value="pavr">pavr</option><option value="pci">pci</option><option value="pci-board">pci-board</option><option value="pci32tlite_oc">pci32tlite_oc</option><option value="pci_blue_interface">pci_blue_interface</option><option value="pci_controller">pci_controller</option><option value="pci_core">pci_core</option><option value="pci_express">pci_express</option><option value="pci_express_crc">pci_express_crc</option><option value="pci_express_x1_endpoint_design">pci_express_x1_endpoint_design</option><option value="pci_ide_controller">pci_ide_controller</option><option value="pci_mini">pci_mini</option><option value="pci_project">pci_project</option><option value="pcie_vera_tb">pcie_vera_tb</option><option value="pcmcia">pcmcia</option><option value="pcpf">pcpf</option><option value="performance_counter">performance_counter</option><option value="perlilog">perlilog</option><option value="phoenix_controller">phoenix_controller</option><option value="phy16ebs">phy16ebs</option><option value="picoblaze_interrupt_controller">picoblaze_interrupt_controller</option><option value="pif2wb">pif2wb</option><option value="pipelined_aes">pipelined_aes</option><option value="pipelined_dct">pipelined_dct</option><option value="pipelined_fft_128">pipelined_fft_128</option><option value="pipelined_fft_256">pipelined_fft_256</option><option value="pipelined_fft_64">pipelined_fft_64</option><option value="pit">pit</option><option value="plasma">plasma</option><option value="plbv46_to_wb_bridge">plbv46_to_wb_bridge</option><option value="plbwbbridge">plbwbbridge</option><option value="pluto">pluto</option><option value="power_inverter">power_inverter</option><option value="power_supply_sequencer">power_supply_sequencer</option><option value="ppcnorthbridge">ppcnorthbridge</option><option value="ppx16">ppx16</option><option value="processor">processor</option><option value="product_code_iterative_decoder">product_code_iterative_decoder</option><option value="profibus_dp">profibus_dp</option><option value="programmabledct">programmabledct</option><option value="project">project</option><option value="ps2">ps2</option><option value="ps2_keyboard">ps2_keyboard</option><option value="ps2core">ps2core</option><option value="ptc">ptc</option><option value="pyramid_unit">pyramid_unit</option><option value="qdr_controller">qdr_controller</option><option value="qo">qo</option><option value="qrisc32">qrisc32</option><option value="quad_decoder">quad_decoder</option><option value="quadratic_func">quadratic_func</option><option value="quadraturecount">quadraturecount</option><option value="r2000">r2000</option><option value="radar">radar</option><option value="radixrsa">radixrsa</option><option value="raggedstone">raggedstone</option><option value="ram_wb">ram_wb</option><option value="ramdac">ramdac</option><option value="ratpack">ratpack</option><option value="rc5-72">rc5-72</option><option value="rc5_decoder">rc5_decoder</option><option value="rcdb">rcdb</option><option value="redfir">redfir</option><option value="reed_solomon_decoder">reed_solomon_decoder</option><option value="reedsolomon">reedsolomon</option><option value="rfid">rfid</option><option value="rijndael">rijndael</option><option value="rijndael_aes">rijndael_aes</option><option value="risc16f84">risc16f84</option><option value="risc36">risc36</option><option value="risc5x">risc5x</option><option value="risc_core_i">risc_core_i</option><option value="risc_processor_with_os">risc_processor_with_os</option><option value="RISCMCU">RISCMCU</option><option value="rise">rise</option><option value="rng_lib">rng_lib</option><option value="robot_control_library">robot_control_library</option><option value="roserisc">roserisc</option><option value="rosetta">rosetta</option><option value="round_robin_arbiter">round_robin_arbiter</option><option value="rs232_syscon">rs232_syscon</option><option value="rs_5_3_gf256">rs_5_3_gf256</option><option value="rs_dec_enc">rs_dec_enc</option><option value="rs_decoder_31_19_6">rs_decoder_31_19_6</option><option value="rsa">rsa</option><option value="rsa_2048bits_processor">rsa_2048bits_processor</option><option value="rsa_512">rsa_512</option><option value="rsencoder">rsencoder</option><option value="rtc">rtc</option><option value="rtea">rtea</option><option value="rxaui_interface_and_xaui_to_rxaui_interface_adapter">rxaui_interface_and_xaui_to_rxaui_interface_adapter</option><option value="s1_core">s1_core</option><option value="sardmips">sardmips</option><option value="sARM7TM">sARM7TM</option><option value="sasc">sasc</option><option value="sayeh_processor">sayeh_processor</option><option value="sbd_sqrt_fp">sbd_sqrt_fp</option><option value="sc2v">sc2v</option><option value="scalable_arbiter">scalable_arbiter</option><option value="scarm">scarm</option><option value="scsi_chip">scsi_chip</option><option value="scsi_interface">scsi_interface</option><option value="sdcard_mass_storage_controller">sdcard_mass_storage_controller</option><option value="sdh">sdh</option><option value="sdr_sdram_ctrl">sdr_sdram_ctrl</option><option value="sdram">sdram</option><option value="sdram_controller" selected="selected">sdram_controller</option><option value="sdram_core">sdram_core</option><option value="sdram_ctrl">sdram_ctrl</option><option value="sea">sea</option><option value="seqalign">seqalign</option><option value="serial_div_uu">serial_div_uu</option><option value="serial_management_interface">serial_management_interface</option><option value="serpent_core">serpent_core</option><option value="sfpga">sfpga</option><option value="sha1">sha1</option><option value="sha1_core_vhdl">sha1_core_vhdl</option><option value="sha_core">sha_core</option><option value="simpcon">simpcon</option><option value="simple_fm_receiver">simple_fm_receiver</option><option value="simple_gpio">simple_gpio</option><option value="simple_pic">simple_pic</option><option value="simple_spi">simple_spi</option><option value="simpleuart">simpleuart</option><option value="simu_mem">simu_mem</option><option value="sin">sin</option><option value="single_clock_divider">single_clock_divider</option><option value="single_port">single_port</option><option value="slave_vme_bridge">slave_vme_bridge</option><option value="smallarm">smallarm</option><option value="smartipphone_si160">smartipphone_si160</option><option value="smbus_if">smbus_if</option><option value="smii">smii</option><option value="socgen">socgen</option><option value="socwire">socwire</option><option value="sonet">sonet</option><option value="spacewire">spacewire</option><option value="spacewire_if">spacewire_if</option><option value="spacewire_light">spacewire_light</option><option value="sparc64soc">sparc64soc</option><option value="spdif_interface">spdif_interface</option><option value="spi">spi</option><option value="spi-slave">spi-slave</option><option value="spi_boot">spi_boot</option><option value="spi_core_dsp_s3ean_kits">spi_core_dsp_s3ean_kits</option><option value="spi_slave">spi_slave</option><option value="spiadc">spiadc</option><option value="spicc">spicc</option><option value="spiflashcontroller">spiflashcontroller</option><option value="spigpio">spigpio</option><option value="spimaster">spimaster</option><option value="spislave">spislave</option><option value="sportinterface">sportinterface</option><option value="srdydrdy_lib">srdydrdy_lib</option><option value="srl_fifo">srl_fifo</option><option value="srtdivision">srtdivision</option><option value="ss_pcm">ss_pcm</option><option value="ssram">ssram</option><option value="steppermotordrive">steppermotordrive</option><option value="stone">stone</option><option value="structural_vhdl">structural_vhdl</option><option value="sts1">sts1</option><option value="svmac">svmac</option><option value="sxp">sxp</option><option value="synth">synth</option><option value="system05">system05</option><option value="System09">System09</option><option value="System11">System11</option><option value="System68">System68</option><option value="system6801">system6801</option><option value="systemc_cordic">systemc_cordic</option><option value="systemc_rng">systemc_rng</option><option value="systemcaes">systemcaes</option><option value="systemcdes">systemcdes</option><option value="systemcmd5">systemcmd5</option><option value="systemverilog-uart16550">systemverilog-uart16550</option><option value="t400">t400</option><option value="t48">t48</option><option value="t51">t51</option><option value="t65">t65</option><option value="t6507lp">t6507lp</option><option value="t80">t80</option><option value="t8000">t8000</option><option value="tausworh_uniform_random_generatotor">tausworh_uniform_random_generatotor</option><option value="tdm">tdm</option><option value="tdm_switch">tdm_switch</option><option value="test">test</option><option value="test-1">test-1</option><option value="test-project">test-project</option><option value="test1">test1</option><option value="test3">test3</option><option value="test_project">test_project</option><option value="test_project_me1">test_project_me1</option><option value="tg68">tg68</option><option value="the_wizardry_project">the_wizardry_project</option><option value="theia_gpu">theia_gpu</option><option value="timestamp">timestamp</option><option value="tiny64">tiny64</option><option value="tiny8">tiny8</option><option value="tisc">tisc</option><option value="tlc2">tlc2</option><option value="toe">toe</option><option value="tosnet">tosnet</option><option value="totalcpu">totalcpu</option><option value="touchscreen_based_pdf_book_reader">touchscreen_based_pdf_book_reader</option><option value="ts7300_opencore">ts7300_opencore</option><option value="turbocodes">turbocodes</option><option value="tv80">tv80</option><option value="two_dimensional_fast_hartley_transform">two_dimensional_fast_hartley_transform</option><option value="twofish">twofish</option><option value="twofish_team">twofish_team</option><option value="ualpha">ualpha</option><option value="uart">uart</option><option value="uart16550">uart16550</option><option value="uart16750">uart16750</option><option value="uart2bus">uart2bus</option><option value="uart8bit">uart8bit</option><option value="uart_fifo">uart_fifo</option><option value="uart_serial">uart_serial</option><option value="ucore">ucore</option><option value="udp_ip__core">udp_ip__core</option><option value="ultimate_crc">ultimate_crc</option><option value="ultramegasquirt">ultramegasquirt</option><option value="ultravec">ultravec</option><option value="unconfuser">unconfuser</option><option value="upcable">upcable</option><option value="usb">usb</option><option value="usb11">usb11</option><option value="usb1_funct">usb1_funct</option><option value="usb_dongle_fpga">usb_dongle_fpga</option><option value="usb_fpga_1_2">usb_fpga_1_2</option><option value="usb_phy">usb_phy</option><option value="usbhostslave">usbhostslave</option><option value="utosnet">utosnet</option><option value="vapi">vapi</option><option value="verilator">verilator</option><option value="verilog_cordic_core">verilog_cordic_core</option><option value="verilog_hamming_code_generator">verilog_hamming_code_generator</option><option value="veristruct">veristruct</option><option value="versatile_counter">versatile_counter</option><option value="versatile_fifo">versatile_fifo</option><option value="versatile_io">versatile_io</option><option value="versatile_mem_ctrl">versatile_mem_ctrl</option><option value="vg_z80_sbc">vg_z80_sbc</option><option value="vga">vga</option><option value="vga_lcd">vga_lcd</option><option value="vhcg">vhcg</option><option value="vhdl-pipeline-mips">vhdl-pipeline-mips</option><option value="vhdl_cpu_emulator">vhdl_cpu_emulator</option><option value="vhdl_wavefiles">vhdl_wavefiles</option><option value="vhdlmd5">vhdlmd5</option><option value="vhld_tb">vhld_tb</option><option value="video_starter_kit">video_starter_kit</option><option value="video_systems">video_systems</option><option value="vip_regs">vip_regs</option><option value="viterbi_decoder">viterbi_decoder</option><option value="viterbi_decoder_k_7_r_1_2">viterbi_decoder_k_7_r_1_2</option><option value="vmm">vmm</option><option value="warp">warp</option><option value="watchdog">watchdog</option><option value="waveform_gen">waveform_gen</option><option value="wb2altera_ddr_core_bridge">wb2altera_ddr_core_bridge</option><option value="wb2hpi">wb2hpi</option><option value="wb2npi">wb2npi</option><option value="wb4pb">wb4pb</option><option value="wb_3p_spram_wrapper">wb_3p_spram_wrapper</option><option value="wb_async_mem_bridge">wb_async_mem_bridge</option><option value="wb_builder">wb_builder</option><option value="wb_conbus">wb_conbus</option><option value="wb_conmax">wb_conmax</option><option value="wb_ddr">wb_ddr</option><option value="wb_dma">wb_dma</option><option value="wb_flash">wb_flash</option><option value="wb_lcd">wb_lcd</option><option value="wb_lpc">wb_lpc</option><option value="wb_mcs51">wb_mcs51</option><option value="wb_prefetch_spram">wb_prefetch_spram</option><option value="wb_rtc">wb_rtc</option><option value="wb_sdhci">wb_sdhci</option><option value="wb_sim_models">wb_sim_models</option><option value="wb_size_bridge">wb_size_bridge</option><option value="wb_tk">wb_tk</option><option value="wb_to_amba">wb_to_amba</option><option value="wb_uart">wb_uart</option><option value="wb_verilog">wb_verilog</option><option value="wb_vga">wb_vga</option><option value="wb_z80">wb_z80</option><option value="wbc_parallel_master">wbc_parallel_master</option><option value="wbif_68k">wbif_68k</option><option value="wisbone_2_ahb">wisbone_2_ahb</option><option value="wishbone_bfm">wishbone_bfm</option><option value="wishbone_checker">wishbone_checker</option><option value="wishbone_out_port">wishbone_out_port</option><option value="wlanmac">wlanmac</option><option value="workwithfiles">workwithfiles</option><option value="wpf">wpf</option><option value="x25_protocol_interface_project">x25_protocol_interface_project</option><option value="x86soc">x86soc</option><option value="xgate">xgate</option><option value="xge_mac">xge_mac</option><option value="xilinx_fpga_i2c_ctrl">xilinx_fpga_i2c_ctrl</option><option value="xmatchpro">xmatchpro</option><option value="xtea">xtea</option><option value="yacc">yacc</option><option value="yadmc">yadmc</option><option value="yanu">yanu</option><option value="yavga">yavga</option><option value="yellowstar">yellowstar</option><option value="z80soc">z80soc</option><option value="zbt_sram_controller">zbt_sram_controller</option><option value="zet86">zet86</option><option value="zpu">zpu</option></select><span class="submit"><input value="Go" type="submit"></span></div></form></div>
+<h1><a href="http://www.opencores.com/websvn,index?" title="Project home">Subversion&nbsp;Repositories</a> <span><a href="http://www.opencores.com/websvn,listing?repname=sdram_controller&amp;path=&amp;">sdram_controller</a></span></h1>
+
+<h2 class="path" style="margin: 0pt 2% 15px;">[<a href="http://www.opencores.com/websvn,listing?repname=sdram_controller&amp;path=%2F&amp;rev=0">/</a>] [<a href="http://www.opencores.com/websvn,listing?repname=sdram_controller&amp;path=%2Fsdram_controller%2F&amp;rev=0">sdram_controller/</a>] [<a href="http://www.opencores.com/websvn,listing?repname=sdram_controller&amp;path=%2Fsdram_controller%2Ftrunk%2F&amp;rev=0">trunk/</a>] [<b>scratch_isim_tb.vhd</b>] - Rev 4</h2>
+<p>
+<span class="diff"><a href="http://www.opencores.com/websvn,diff?repname=sdram_controller&amp;path=%2Fsdram_controller%2Ftrunk%2Fscratch_isim_tb.vhd&amp;rev=0">Compare with Previous</a></span> |
+<span class="blame"><a href="http://www.opencores.com/websvn,blame?repname=sdram_controller&amp;path=%2Fsdram_controller%2Ftrunk%2Fscratch_isim_tb.vhd&amp;rev=0">Blame</a></span> |
+<span class="log"><a href="http://www.opencores.com/websvn,log?repname=sdram_controller&amp;path=%2Fsdram_controller%2Ftrunk%2Fscratch_isim_tb.vhd&amp;rev=0&amp;isdir=0">View&nbsp;Log</a></span>
+</p>
+    <div class="listing">
+<pre class="vhdl" style="font-family: monospace;"><span style="color: rgb(0, 128, 0); font-style: italic;">--------------------------------------------------------------------------------</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- Company: OPL Aerospatiale AG</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- Engineer: Owen Lynn &lt;lynn0p@hotmail.com&gt;</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">--</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- Create Date:   01:02:17 08/25/2009</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- Design Name:   </span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- Module Name:  scratch_isim_tb.vhd</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- Project Name:  SDRAM_TB</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- Target Device:  </span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- Tool versions:  </span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- Description:   </span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- </span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- VHDL Test Bench Created by ISE for module: scratch</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- </span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- Dependencies:</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- </span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- Revision:</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- Revision 0.01 - File Created</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- Additional Comments:</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">--  Copyright (c) 2009 Owen Lynn &lt;lynn0p@hotmail.com&gt;</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">--  Released under the GNU Lesser General Public License, Version 3</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">--</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- Notes: </span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- This testbench has been automatically generated using types std_logic and</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- std_logic_vector for the ports of the unit under test.  Xilinx recommends</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- that these types always be used for the top-level I/O of a design in order</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- to guarantee that the testbench will bind correctly to the post-implementation </span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">-- simulation model.</span>
+<span style="color: rgb(0, 128, 0); font-style: italic;">--------------------------------------------------------------------------------</span>
+<span style="color: rgb(0, 0, 128); font-weight: bold;">LIBRARY</span> <span style="color: rgb(0, 0, 255);">ieee</span><span style="color: rgb(0, 0, 102);">;</span>
+<span style="color: rgb(0, 0, 128); font-weight: bold;">USE</span> <span style="color: rgb(0, 0, 255);">ieee</span>.<span style="color: rgb(0, 0, 255);">std_logic_1164</span>.<span style="color: rgb(0, 0, 128); font-weight: bold;">ALL</span><span style="color: rgb(0, 0, 102);">;</span>
+<span style="color: rgb(0, 0, 128); font-weight: bold;">USE</span> <span style="color: rgb(0, 0, 255);">ieee</span>.std_logic_unsigned.<span style="color: rgb(0, 0, 128); font-weight: bold;">all</span><span style="color: rgb(0, 0, 102);">;</span>
+<span style="color: rgb(0, 0, 128); font-weight: bold;">USE</span> <span style="color: rgb(0, 0, 255);">ieee</span>.<span style="color: rgb(0, 0, 255);">numeric_std</span>.<span style="color: rgb(0, 0, 128); font-weight: bold;">ALL</span><span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+<span style="color: rgb(0, 0, 128); font-weight: bold;">library</span> UNISIM<span style="color: rgb(0, 0, 102);">;</span>
+<span style="color: rgb(0, 0, 128); font-weight: bold;">use</span> UNISIM.VComponents.<span style="color: rgb(0, 0, 128); font-weight: bold;">all</span><span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+<span style="color: rgb(0, 0, 128); font-weight: bold;">ENTITY</span> scratch_isim_tb <span style="color: rgb(0, 0, 128); font-weight: bold;">IS</span>
+	<span style="color: rgb(0, 0, 128); font-weight: bold;">port</span><span style="color: rgb(0, 0, 102);">(</span>
+		debug_reg <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">out</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">7</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span>
+	<span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+<span style="color: rgb(0, 0, 128); font-weight: bold;">END</span> scratch_isim_tb<span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+<span style="color: rgb(0, 0, 128); font-weight: bold;">ARCHITECTURE</span> behavior <span style="color: rgb(0, 0, 128); font-weight: bold;">OF</span> scratch_isim_tb <span style="color: rgb(0, 0, 128); font-weight: bold;">IS</span> 
+&nbsp;
+    <span style="color: rgb(0, 128, 0); font-style: italic;">-- Component Declaration for the Unit Under Test (UUT)</span>
+&nbsp;
+    <span style="color: rgb(0, 0, 128); font-weight: bold;">COMPONENT</span> scratch
+    <span style="color: rgb(0, 0, 128); font-weight: bold;">PORT</span><span style="color: rgb(0, 0, 102);">(</span>
+         clk <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">IN</span>  <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+			clke <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">in</span> <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+         rst <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">IN</span>  <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+         led <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">OUT</span>  <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">7</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+         dram_clkp <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">OUT</span>  <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+         dram_clkn <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">OUT</span>  <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+         dram_clke <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">OUT</span>  <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+			dram_cs <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">out</span> <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+         dram_cmd <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">OUT</span>  <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">2</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+         dram_bank <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">OUT</span>  <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">1</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+         dram_addr <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">OUT</span>  <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">12</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+         dram_dm <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">OUT</span>  <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">1</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+         dram_dqs <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">INOUT</span>  <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">1</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+         dram_dq <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">INOUT</span>  <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">15</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+			debug_reg <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">out</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">7</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span>
+        <span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+    <span style="color: rgb(0, 0, 128); font-weight: bold;">END</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">COMPONENT</span><span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+	 <span style="color: rgb(0, 0, 128); font-weight: bold;">component</span> ddr
+	 <span style="color: rgb(0, 0, 128); font-weight: bold;">port</span><span style="color: rgb(0, 0, 102);">(</span>
+		Clk   <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">in</span> <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+		Clk_n <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">in</span> <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+		Cke   <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">in</span> <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+		Cs_n  <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">in</span> <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+		Ras_n <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">in</span> <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+		Cas_n <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">in</span> <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+		We_n  <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">in</span> <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+		Ba    <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">in</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">1</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+		Addr  <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">in</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">12</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+		Dm    <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">in</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">1</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+		Dq    <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">inout</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">15</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+		Dqs   <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">inout</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">1</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span>
+	 <span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+	 <span style="color: rgb(0, 0, 128); font-weight: bold;">end</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">component</span><span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+&nbsp;
+   <span style="color: rgb(0, 128, 0); font-style: italic;">--Inputs</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">signal</span> clk <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">std_logic</span> <span style="color: rgb(0, 0, 102);">:=</span> '<span style="color: rgb(255, 0, 0);">0</span>'<span style="color: rgb(0, 0, 102);">;</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">signal</span> rst <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">std_logic</span> <span style="color: rgb(0, 0, 102);">:=</span> '<span style="color: rgb(255, 0, 0);">0</span>'<span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+	<span style="color: rgb(0, 128, 0); font-style: italic;">--BiDirs</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">signal</span> dram_dqs <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">1</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">signal</span> dram_dq <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">15</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+ 	<span style="color: rgb(0, 128, 0); font-style: italic;">--Outputs</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">signal</span> led <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">7</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">signal</span> dram_clkp <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">signal</span> dram_clkn <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">signal</span> dram_clke <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+	<span style="color: rgb(0, 0, 128); font-weight: bold;">signal</span> dram_cs <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">std_logic</span><span style="color: rgb(0, 0, 102);">;</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">signal</span> dram_cmd <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">2</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">signal</span> dram_bank <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">1</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">signal</span> dram_addr <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">12</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">signal</span> dram_dm <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">1</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+	<span style="color: rgb(0, 128, 0); font-style: italic;">--signal debug_reg : std_logic_vector(7 downto 0);</span>
+	<span style="color: rgb(0, 0, 128); font-weight: bold;">signal</span> debug_wait <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">std_logic_vector</span><span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">15</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">downto</span> <span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+   <span style="color: rgb(0, 128, 0); font-style: italic;">-- Clock period definitions</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">constant</span> clk_period <span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 255);">time</span> <span style="color: rgb(0, 0, 102);">:=</span> <span style="color: rgb(255, 0, 0);">20.0</span> <span style="color: rgb(255, 0, 0);">ns</span><span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+<span style="color: rgb(0, 0, 128); font-weight: bold;">BEGIN</span>
+&nbsp;
+	<span style="color: rgb(0, 128, 0); font-style: italic;">-- Instantiate the Unit Under Test (UUT)</span>
+   uut<span style="color: rgb(0, 0, 102);">:</span> scratch <span style="color: rgb(0, 0, 128); font-weight: bold;">PORT</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">MAP</span> <span style="color: rgb(0, 0, 102);">(</span>
+          clk <span style="color: rgb(0, 0, 102);">=&gt;</span> clk,
+			 clke <span style="color: rgb(0, 0, 102);">=&gt;</span> '<span style="color: rgb(255, 0, 0);">1</span>',
+          rst <span style="color: rgb(0, 0, 102);">=&gt;</span> rst,
+          led <span style="color: rgb(0, 0, 102);">=&gt;</span> led,
+          dram_clkp <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_clkp,
+          dram_clkn <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_clkn,
+          dram_clke <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_clke,
+			 dram_cs <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_cs,
+          dram_cmd <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_cmd,
+          dram_bank <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_bank,
+          dram_addr <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_addr,
+          dram_dm <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_dm,
+          dram_dqs <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_dqs,
+          dram_dq <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_dq,
+			 debug_reg <span style="color: rgb(0, 0, 102);">=&gt;</span> debug_reg
+        <span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+	DRAM_CHIP<span style="color: rgb(0, 0, 102);">:</span> ddr
+	<span style="color: rgb(0, 0, 128); font-weight: bold;">port</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">map</span><span style="color: rgb(0, 0, 102);">(</span>
+		Clk   <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_clkp,
+		Clk_n <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_clkn,
+		Cke   <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_clke,
+		Cs_n  <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_cs,
+		Ras_n <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_cmd<span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">0</span><span style="color: rgb(0, 0, 102);">)</span>,
+		Cas_n <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_cmd<span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">1</span><span style="color: rgb(0, 0, 102);">)</span>,
+		We_n  <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_cmd<span style="color: rgb(0, 0, 102);">(</span><span style="color: rgb(255, 0, 0);">2</span><span style="color: rgb(0, 0, 102);">)</span>,
+		Ba    <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_bank,
+		Addr  <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_addr,
+		Dm    <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_dm,
+		Dq    <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_dq,
+		Dqs   <span style="color: rgb(0, 0, 102);">=&gt;</span> dram_dqs
+	<span style="color: rgb(0, 0, 102);">)</span><span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+&nbsp;
+   <span style="color: rgb(0, 128, 0); font-style: italic;">-- Clock process definitions</span>
+   clk_process <span style="color: rgb(0, 0, 102);">:</span><span style="color: rgb(0, 0, 128); font-weight: bold;">process</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">begin</span>
+		clk <span style="color: rgb(0, 0, 102);">&lt;=</span> '<span style="color: rgb(255, 0, 0);">0</span>'<span style="color: rgb(0, 0, 102);">;</span>
+		<span style="color: rgb(0, 0, 128); font-weight: bold;">wait</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">for</span> clk_period/<span style="color: rgb(255, 0, 0);">2</span><span style="color: rgb(0, 0, 102);">;</span>
+		clk <span style="color: rgb(0, 0, 102);">&lt;=</span> '<span style="color: rgb(255, 0, 0);">1</span>'<span style="color: rgb(0, 0, 102);">;</span>
+		<span style="color: rgb(0, 0, 128); font-weight: bold;">wait</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">for</span> clk_period/<span style="color: rgb(255, 0, 0);">2</span><span style="color: rgb(0, 0, 102);">;</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">end</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">process</span><span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+&nbsp;
+   <span style="color: rgb(0, 128, 0); font-style: italic;">-- Stimulus process</span>
+   stim_proc<span style="color: rgb(0, 0, 102);">:</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">process</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">begin</span>		
+      <span style="color: rgb(0, 128, 0); font-style: italic;">-- hold reset state for 100ms.</span>
+      <span style="color: rgb(0, 0, 128); font-weight: bold;">wait</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">for</span> 100ms<span style="color: rgb(0, 0, 102);">;</span>	
+&nbsp;
+      <span style="color: rgb(0, 0, 128); font-weight: bold;">wait</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">for</span> clk_period*<span style="color: rgb(255, 0, 0);">10</span><span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+      <span style="color: rgb(0, 128, 0); font-style: italic;">-- insert stimulus here </span>
+&nbsp;
+      <span style="color: rgb(0, 0, 128); font-weight: bold;">wait</span><span style="color: rgb(0, 0, 102);">;</span>
+   <span style="color: rgb(0, 0, 128); font-weight: bold;">end</span> <span style="color: rgb(0, 0, 128); font-weight: bold;">process</span><span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;
+<span style="color: rgb(0, 0, 128); font-weight: bold;">END</span><span style="color: rgb(0, 0, 102);">;</span>
+&nbsp;</pre>    </div>
+<p>
+<span class="diff"><a href="http://www.opencores.com/websvn,diff?repname=sdram_controller&amp;path=%2Fsdram_controller%2Ftrunk%2Fscratch_isim_tb.vhd&amp;rev=0">Compare with Previous</a></span> |
+<span class="blame"><a href="http://www.opencores.com/websvn,blame?repname=sdram_controller&amp;path=%2Fsdram_controller%2Ftrunk%2Fscratch_isim_tb.vhd&amp;rev=0">Blame</a></span> |
+<span class="log"><a href="http://www.opencores.com/websvn,log?repname=sdram_controller&amp;path=%2Fsdram_controller%2Ftrunk%2Fscratch_isim_tb.vhd&amp;rev=0&amp;isdir=0">View&nbsp;Log</a></span>
+</p>
+</div>
+<div id="websvnfooter">
+    <p style="margin: 0pt; padding: 0pt;"><small>powered by: <a href="http://www.websvn.info/">WebSVN 2.1.0</a></small></p>
+</div>
+        </div>
+	<div style="clear: both; margin-left: 200px;">
+	    <script type="text/javascript"><!--
+                google_ad_client = "pub-0097483751598630";
+                /* 728x90, skapad 2008-05-22 */
+                google_ad_slot = "5038113202";
+                google_ad_width = 728;
+                google_ad_height = 90;
+                //-->
+	    </script>
+	    <script type="text/javascript" src="prototype%20SDcontroller_files/show_ads.js"></script><script src="prototype%20SDcontroller_files/expansion_embed.js"></script><script src="prototype%20SDcontroller_files/test_domain.js"></script><script>google_protectAndRun("ads_core.google_render_ad", google_handleError, google_render_ad);</script><ins style="border: medium none ; margin: 0pt; padding: 0pt; display: inline-table; height: 90px; position: relative; visibility: visible; width: 728px;"><ins style="border: medium none ; margin: 0pt; padding: 0pt; display: block; height: 90px; position: relative; visibility: visible; width: 728px;"><iframe allowtransparency="true" hspace="0" id="google_ads_frame1" marginheight="0" marginwidth="0" name="google_ads_frame" src="prototype%20SDcontroller_files/ads.htm" style="left: 0pt; position: absolute; top: 0pt;" vspace="0" width="728" frameborder="0" height="90" scrolling="no"></iframe></ins></ins>
+	</div>
+    </div>
+</div>
+</div>
+</div>
+<div class="shad_bot">
+    <div class="left"></div>
+<div class="right"></div>
+<div class="middle">
+    © copyright 1999-2010
+    OpenCores.org, equivalent to ORSoC AB, all rights reserved. OpenCores®, registered trademark.
+</div>
+</div>
+
+<!-- Google search -->
+<script type="text/javascript" src="prototype%20SDcontroller_files/jsapi"></script>
+<script type="text/javascript">google.load("elements", "1", {packages: "transliteration"});</script><script src="prototype%20SDcontroller_files/a" type="text/javascript"></script><link href="prototype%20SDcontroller_files/transliteration.css" type="text/css" rel="stylesheet"><script src="prototype%20SDcontroller_files/transliteration.js" type="text/javascript"></script>
+<script type="text/javascript" src="prototype%20SDcontroller_files/t13n.htm"></script>
+<script type="text/javascript" src="prototype%20SDcontroller_files/brand.htm"></script>
+<!-- /Google search -->
+<!-- Google analytics -->
+<script type="text/javascript">
+    var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+    document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script><script src="prototype%20SDcontroller_files/ga.js" type="text/javascript"></script>
+<script type="text/javascript">
+    var pageTracker = _gat._getTracker("UA-2763846-2");
+    pageTracker._initData();
+    pageTracker._trackPageview();
+</script>
+<!-- /Google analytics -->
+
+</body></html>

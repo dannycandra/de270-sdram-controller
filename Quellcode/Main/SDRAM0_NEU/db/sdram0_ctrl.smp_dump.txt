@@ -1,0 +1,10 @@
+
+State Machine - |sdram0_ctrl|sig_aktZustand
+Name sig_aktZustand.AUTO_REFRESH sig_aktZustand.ZURUECKSETZEN sig_aktZustand.SCHREIBEN sig_aktZustand.LESEN sig_aktZustand.INIT sig_aktZustand.IDLE sig_aktZustand.OFF 
+sig_aktZustand.OFF 0 0 0 0 0 0 0 
+sig_aktZustand.IDLE 0 0 0 0 0 1 1 
+sig_aktZustand.INIT 0 0 0 0 1 0 1 
+sig_aktZustand.LESEN 0 0 0 1 0 0 1 
+sig_aktZustand.SCHREIBEN 0 0 1 0 0 0 1 
+sig_aktZustand.ZURUECKSETZEN 0 1 0 0 0 0 1 
+sig_aktZustand.AUTO_REFRESH 1 0 0 0 0 0 1 

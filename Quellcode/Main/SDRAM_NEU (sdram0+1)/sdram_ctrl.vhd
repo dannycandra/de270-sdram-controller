@@ -1,0 +1,147 @@
+---------------------------------------------------------------------------
+-- Funktion : Ansteuerung des extern SDRAM0 Speichers auf dem DE2-70 Board
+-- Filename : sdram_ctrl.vhd
+-- Beschreibung : 4M x 16bit x 4 Banks SDRAM
+-- Standard : VHDL 1993
+-- Author : Danny Candra
+-- Revision : Version 0.1 
+---------------------------------------------------------------------------
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.std_logic_unsigned.all; 
+
+entity sdram_ctrl is
+	generic
+	(
+		-- SD Spezifikationen
+		-- Die Zeilenadresse, Spaltenadresse, Bankadresse werden in einem Signal zusammengefasst
+		-- d.h ADDR[0..8] => Spaltenadresse, ADDR[9..21] => Zeilenadresse, ADDR[22..23] => Bankadresse
+		ASIZE				:	integer := 24;	 -- Die Groesse der Eingangsadresse
+		DQSIZE			:	integer := 32;  -- Die Groesse des Datenbus      
+		ROWSIZE			:	integer := 13;  -- Die Groesse der Zeilenadresse
+		COLSIZE			:	integer := 9;   -- Die Groesse der Spalteadresse
+		BANKSIZE			:	integer := 2;	 -- Die Groesse der Bankadresse
+		ROWSTART			:	integer := 9;	 -- Die Startadresse von Zeilenadresse innerhalb Eingang ADDR	
+		COLSTART			:	integer := 0;	 -- Die Startadresse von Spaltenadresse innerhalb Eingang ADDR
+		BANKSTART		:	integer := 22	 -- Die Startadresse von Bankadresse innerhalb Eingang ADDR
+	);
+	
+	port
+	(
+		-- Benutzer Schnittstelle 
+		CMD				:	in		std_logic_vector(2 downto 0);				-- Befehle von User (MRS,Lesen,Schreiben,NOP)
+		CMDACK			:	out	std_logic;										-- Bestaetigung fuer User
+		ADDR				:	in		std_logic_vector(ASIZE-1 downto 0); 	-- Adresseingabe von User
+		DQ					:	inout std_logic_vector(DQSIZE-1 downto 0);	--	Datenbus				
+		DM					:	in		std_logic_vector(1 downto 0);  			-- Datenmask
+		CLK				:	in		std_logic;										-- Clock
+		RESET				: 	in		std_logic;										-- Reset
+		
+		-- SDRAM Schnittstelle
+		-- SDRAM0 
+		oDRAM0_A			:	out	std_logic_vector(ROWSIZE-1 downto 0);	-- SDRAM0 Adresse
+		oDRAM0_BA		:	out	std_logic_vector(BANKSIZE-1 downto 0);	-- SDRAM0 Bank
+		oDRAM0_CKE		:	out	std_logic;	-- Clock enable
+		oDRAM0_CLK		:	out	std_logic;	-- Clock
+		oDRAM0_CAS_N	:	out	std_logic;	-- Spaltenadresse Abtastzeit
+		oDRAM0_RAS_N	:	out	std_logic;	-- Zeilenadresse Abtastzeit
+		oDRAM0_WE_N		:	out	std_logic;	-- Write enable
+		oDRAM0_CS_N		:	out	std_logic;	-- Chip select
+		oDRAM0_LDQM0	:	out	std_logic;	--	Untere Datenmaske
+		oDRAM0_UDQM1	:	out	std_logic;	--	Obere Datenmaske
+		
+		-- SDRAM1 
+		oDRAM1_A			:	out	std_logic_vector(ROWSIZE-1 downto 0);	-- SDRAM0 Adresse
+		oDRAM1_BA		:	out	std_logic_vector(BANKSIZE-1 downto 0);	-- SDRAM0 Bank
+		oDRAM1_CKE		:	out	std_logic;	-- Clock enable
+		oDRAM1_CLK		:	out	std_logic;	-- Clock
+		oDRAM1_CAS_N	:	out	std_logic;	-- Spaltenadresse Abtastzeit
+		oDRAM1_RAS_N	:	out	std_logic;	-- Zeilenadresse Abtastzeit
+		oDRAM1_WE_N		:	out	std_logic;	-- Write enable
+		oDRAM1_CS_N		:	out	std_logic;	-- Chip select
+		oDRAM1_LDQM0	:	out	std_logic;	--	Untere Datenmaske
+		oDRAM1_UDQM1	:	out	std_logic;	--	Obere Datenmaske	
+		
+		-- Datenbus
+		DRAM_DQ			:	inout	std_logic_vector(DQSIZE-1 downto 0)	-- SDRAM DQ 0-15 => SDRAM0, 16-31 => SDRAM1
+	);
+end sdram_ctrl;
+
+architecture VERHALTEN of sdram_ctrl is
+
+   -- Signale Deklarationen
+	signal sig_clklocked	: std_logic;
+	signal sig_clk			: std_logic;
+	
+	-- Component Deklarationen
+	-- Phase locked
+	component pll1 is
+   port (
+		inclock        : in      std_logic;
+		clock1         : out     std_logic;
+		locked         : out     std_logic
+	);
+	end component;
+	
+	-- Begin Architecture
+	begin
+		-- Instanziierung altpll
+		pll : pll1
+		 port map (
+			inclock 	=> CLK,
+			locked  	=> sig_clklocked,
+			clock1  	=> sig_clk
+		 );
+		
+		-- Process Ablauf
+		process(sig_clk,RESET)
+		variable zustand		: integer;
+		begin
+		
+			
+			
+			if(RESET = '0') then
+			
+			elsif(rising_edge(sig_clk)) then
+			CKE <= '1'; 									-- Clock Enable
+				------------------------------------
+				-- SDRAM0
+				------------------------------------			
+				-- NOP
+				if(CMD = "000") then
+				
+				-- Lesen
+				elsif(CMD = "001") then
+				
+				-- Schreiben
+				elsif(CMD = "010") then
+				
+				-- MRS
+				elsif(CMD = "011") then
+				
+				------------------------------------
+				-- SDRAM1
+				------------------------------------
+				
+				-- NOP
+				elsif(CMD = "100") then
+				
+				-- Lesen
+				elsif(CMD = "101") then
+				
+				-- Schreiben
+				elsif(CMD = "110") then
+				
+				-- MRS
+				elsif(CMD = "111") then
+				
+				end if;
+				
+				-- Bestaetigung absenden
+				CMDACK <= '1';
+				
+			end if;
+
+		end process;	
+		
+end VERHALTEN;

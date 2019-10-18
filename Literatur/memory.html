@@ -1,0 +1,94 @@
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<title>Memory</title>
+</head><body>
+<h1>Memory</h1>
+
+<p>The DE2 board provides an 8-Mbyte SDRAM, 512-Kbyte SRAM, and
+4-Mbyte (1-Mbyte on some boards) Flash memory. Figures 1, 2, and
+3 show the schematics of the memory chips. The pin assignments for
+each device are listed in Table 1. The datasheets
+for the memory chips are provided in the references.
+
+
+</p><center>
+<p><img src="memory_files/SDRAM_schematic.jpg" width="480">
+</p><p>Figure 1. SDRAM schematic.
+</p><p><img src="memory_files/SRAM_schematic.jpg" width="480">
+</p><p>Figure 2. SRAM schematic.
+</p><p><img src="memory_files/Flash_schematic.jpg" width="480">
+</p><p>Figure 3. Flash schematic.
+</p></center>
+
+
+<center>
+<p>Table 1. Signal assignments for the memory chips.
+</p><p><table border="1">
+<tbody><tr bgcolor="#ccccff"><th>Signal Name</th><th>Description
+</th></tr><tr><td>DRAM_ADDR[11:0] </td><td> SDRAM Address[11:0]
+</td></tr><tr><td>DRAM_DQ[15:0] </td><td> SDRAM Data[15:0]
+</td></tr><tr><td>DRAM_BA_0 </td><td> SDRAM Bank Address[0]
+</td></tr><tr><td>DRAM_BA_1 </td><td> SDRAM Bank Address[1]
+</td></tr><tr><td>DRAM_LDQM </td><td> SDRAM Low-byte Data Mask
+</td></tr><tr><td>DRAM_UDQM </td><td> SDRAM High-byte Data Mask
+</td></tr><tr><td>DRAM_RAS_N </td><td> SDRAM Row Address Strobe
+</td></tr><tr><td>DRAM_CAS_N </td><td> SDRAM Column Address Strobe
+</td></tr><tr><td>DRAM_CKE </td><td> SDRAM Clock Enable
+</td></tr><tr><td>DRAM_CLK </td><td> SDRAM Clock
+</td></tr><tr><td>DRAM_WE_N </td><td> SDRAM Write Enable
+</td></tr><tr><td>DRAM_CS_N </td><td> SDRAM Chip Select
+</td></tr></tbody></table>
+
+</p><p><table border="1">
+<tbody><tr bgcolor="#ccccff"><th>Signal Name</th><th>Description
+</th></tr><tr><td>SRAM_ADDR[17:0] </td><td> SRAM Address[17:0]
+</td></tr><tr><td>SRAM_DQ[15:0] </td><td> SRAM Data[15:0]
+</td></tr><tr><td>SRAM_WE_N </td><td> SRAM Write Enable
+</td></tr><tr><td>SRAM_OE_N </td><td> SRAM Output Enable
+</td></tr><tr><td>SRAM_UB_N </td><td> SRAM High-byte Data Mask
+</td></tr><tr><td>SRAM_LB_N </td><td> SRAM Low-byte Data Mask
+</td></tr><tr><td>SRAM_CE_N </td><td> SRAM Chip Enable 
+</td></tr></tbody></table>
+
+</p><p><table border="1">
+<tbody><tr bgcolor="#ccccff"><th>Signal Name</th><th>Description
+</th></tr><tr><td>FL_ADDR[21:0] </td><td> FLASH Address[21:0]
+</td></tr><tr><td>FL_DQ[7:0] </td><td> FLASH Data[7:0]
+</td></tr><tr><td>FL_CE_N </td><td> FLASH Chip Enable
+</td></tr><tr><td>FL_OE_N </td><td> FLASH Output Enable
+</td></tr><tr><td>FL_RST_N </td><td> FLASH Reset
+</td></tr><tr><td>FL_WE_N </td><td> FLASH Write Enable 
+</td></tr></tbody></table>
+</p></center>
+
+
+<p>See <a href="http://www.johnloomis.org/altera/DE2/DE2_pin_assignments.csv">DE2_pin_assignments.csv</a>, a comma-delimited file
+that matches "standard" descriptive names to actual FPGA pin locations. This file can be
+directly opened in Microsoft Excel.
+
+
+
+</p><h3>References</h3>
+
+<dir>
+
+<p><a href="http://www.johnloomis.org/altera/DE2/Datasheets/Memory/IS41S16400.pdf">SDRAM datasheet</a>
+
+</p><p><a href="http://www.johnloomis.org/altera/DE2/Datasheets/Memory/61LV25616.pdf">SRAM datasheet</a>
+
+</p><p><a href="http://www.johnloomis.org/altera/DE2/Datasheets/Memory/S29AL032D_00_A5_E.pdf">Flash Memory datasheet</a>
+
+
+</p><p><a href="http://www.altera.com/education/univ/materials/boards/unv-de2-board.html">
+<img src="memory_files/altera_logo.gif" align="middle" border="0" height="42"></a>
+&nbsp;&nbsp;
+<a href="http://www.johnloomis.org/altera/DE2/DE2_UserManual.pdf">DE2 User Manual</a>, version 1.4, 2006. (pdf)
+</p></dir>
+
+<p></p><hr>
+
+<p>Maintained by <a href="http://www.johnloomis.org/"> John Loomis</a>, 
+last updated <i>28 April 2007 </i></p>
+
+</body></html>
